@@ -43,15 +43,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const checkSession = async () => {
       const startTime = Date.now();
       try {
+        // TODO: Change this back to the real backend endpoint
+        // const response = await fetch(
+        //   "http://localhost/api/users/auth/check-session",
+        //   {
+        //     credentials: "include",
+        //   }
+        // );
+
+        // TEMPORARY: Using test endpoint for development
         const response = await fetch(
-          "http://localhost/api/users/auth/check-session",
+          "/api/test/stay-logged-in",
           {
             credentials: "include",
           }
         );
         if (response.ok) {
-          // const userData = await response.json();
-          // setUser(userData.user);
+          const userData = await response.json();
+          setUser(userData.user);
           setLastRefresh(Date.now());
         }
       } catch (error) {
