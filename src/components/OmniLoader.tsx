@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
-const HunzoLoader: React.FC = () => {
+const OmniLoader: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,14 +28,14 @@ const HunzoLoader: React.FC = () => {
         >
           <header className="flex items-center mb-8">
             <Image
-              src="/icons/Hunzo-Logo.svg"
-              alt="Hunzo Logo"
+              src="/icons/Omni-Logo.svg"
+              alt="Omni Logo"
               width={56}
               height={56}
               className="h-12 w-10 mr-2"
             />
             <h1 className="text-3xl font-semibold -tracking-wide text-[#073B4C] font-poppins">
-              Hunzo
+              Omni
             </h1>
           </header>
         </motion.div>
@@ -44,4 +44,4 @@ const HunzoLoader: React.FC = () => {
   );
 };
 
-export default HunzoLoader;
+export default OmniLoader;

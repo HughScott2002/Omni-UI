@@ -199,9 +199,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // if (loading) {
   //   return (
   //     <div className="w-full h-screen flex justify-center items-center transition">
-  //       <Loader2 size={20} className="animate-spin text-hunzo-blue w-6 h-6" />{" "}
+  //       <Loader2 size={20} className="animate-spin text-Omni-blue w-6 h-6" />{" "}
   //       &nbsp;
-  //       <span className="font-poppins text-hunzo-blue text-lg ">
+  //       <span className="font-poppins text-Omni-blue text-lg ">
   //         Loading...
   //       </span>
   //     </div>
@@ -224,9 +224,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           >
             <Loader2
               size={20}
-              className="animate-spin text-hunzo-blue w-6 h-6"
+              className="animate-spin text-Omni-blue w-6 h-6"
             />
-            <span className="font-poppins text-hunzo-blue text-lg ml-2">
+            <span className="font-poppins text-Omni-blue text-lg ml-2">
               Loading...
             </span>
           </motion.div>

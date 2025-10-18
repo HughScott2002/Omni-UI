@@ -1,5 +1,5 @@
-export const appName = "Hunzo";
-export const appShortName = "Hunzo";
+export const appName = "Omni";
+export const appShortName = "Omni";
 export const appDescription = `${appName} is a fintech that provides a seamless experience for managing your finances.`;
 export const loginHeaderSubtext = "Login to your account to get started.";
 export const registerHeaderSubtext = "Create an account to get started.";

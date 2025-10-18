@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/components/AuthContext";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/theme-provider";
-// import { HunzoAuthProvider } from "@/components/HunzoAuthProvider";
+// import { OmniAuthProvider } from "@/components/OmniAuthProvider";
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -139,7 +139,7 @@ export const metadata: Metadata = {
   title: appName,
   description: appDescription,
   icons: {
-    icon: "/icons/Hunzo-Logo.svg",
+    icon: "/icons/Omni-Logo.svg",
   },
 };
 
