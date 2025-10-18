@@ -1,10 +1,10 @@
 import Image from "next/image";
-const HunzoInactiveDevelopment = () => {
+const OmniInactiveDevelopment = () => {
   return (
-    <div className="bg-hunzo-yellow rounded-3xl h-full w-full flex flex-col gap-4 justify-center items-center relative">
+    <div className="bg-Omni-yellow rounded-3xl h-full w-full flex flex-col gap-4 justify-center items-center relative">
       <Image
-        src="/icons/Hunzo-Logo.svg"
-        alt="Hunzo Logo"
+        src="/icons/Omni-Logo.svg"
+        alt="Omni Logo"
         width={56}
         height={56}
         className="h-10 w-10"
@@ -16,4 +16,4 @@ const HunzoInactiveDevelopment = () => {
   );
 };
 
-export default HunzoInactiveDevelopment;
+export default OmniInactiveDevelopment;

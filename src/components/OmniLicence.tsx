@@ -3,20 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const HunzoLicence = () => {
+const OmniLicence = () => {
   return (
-    <p className="flex items-center flex-wrap gap-2 text-sm text-hunzo-text-grey flex-col">
+    <p className="flex items-center flex-wrap gap-2 text-sm text-Omni-text-grey flex-col">
       <div className="">
         <Link
-          href="https://github.com/HughScott2002/Hunzo-UI"
-          className="text-hunzo-blue hover:text-blue-800"
+          href="https://github.com/HughScott2002/Omni-UI"
+          className="text-Omni-blue hover:text-blue-800"
         >
-          Hunzo
+          Omni
         </Link>
         <span> by </span>
         <Link
           href="https://github.com/HughScott2002/"
-          className="text-hunzo-blue hover:text-blue-800"
+          className="text-Omni-blue hover:text-blue-800"
         >
           Hugh Scott
         </Link>
@@ -67,7 +67,7 @@ const HunzoLicence = () => {
   );
 };
 
-export default HunzoLicence;
+export default OmniLicence;
 export const CcIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

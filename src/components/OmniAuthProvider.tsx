@@ -40,7 +40,7 @@ interface JWTPayload {
 // Create the context with undefined default value
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function HunzoAuthProvider({ children }: { children: React.ReactNode }) {
+export function OmniAuthProvider({ children }: { children: React.ReactNode }) {
   // State management
   const [user, setUser] = useState<User | null>(null); // Store user data
   const [loading, setLoading] = useState(true); // Loading state
@@ -323,9 +323,9 @@ export function HunzoAuthProvider({ children }: { children: React.ReactNode }) {
           >
             <Loader2
               size={20}
-              className="animate-spin text-hunzo-blue w-6 h-6"
+              className="animate-spin text-Omni-blue w-6 h-6"
             />
-            <span className="font-poppins text-hunzo-blue text-lg ml-2">
+            <span className="font-poppins text-Omni-blue text-lg ml-2">
               Loading...
             </span>
           </motion.div>
@@ -349,7 +349,7 @@ export function HunzoAuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an Hunzo");
+    throw new Error("useAuth must be used within an Omni");
   }
   return context;
 }

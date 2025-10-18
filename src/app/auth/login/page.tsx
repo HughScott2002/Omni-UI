@@ -1,4 +1,4 @@
 
 export default function Component() {
-  return <HunzoLoginForm />;
+  return <OmniLoginForm />;
 }
