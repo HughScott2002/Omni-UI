@@ -13,10 +13,14 @@ import OmniQR from "./OmniQR";
 import OmniSendMoney from "./OmniSendMoney";
 
 const OmniMoveButton = () => {
+  // TODO: Get actual accountId from auth context
+  const accountId = ""; // Replace with actual accountId from auth
+
   return (
     <OmniSendMoney
+      accountId={accountId}
       trigger={
-        <div className="p-2 flexitems-center">
+        <div className="p-2 flex items-center">
           <ArrowLeftRight className="size-4" />
         </div>
       }

@@ -3,7 +3,7 @@ export const appShortName = "Omni";
 export const appDescription = `${appName} is a fintech that provides a seamless experience for managing your finances.`;
 export const loginHeaderSubtext = "Login to your account to get started.";
 export const registerHeaderSubtext = "Create an account to get started.";
-
+export const API_BASE_URL = "http://localhost";
 //TODO: Add siderbar auth so that the user can only see some things in the siderbar
 
 export const sidebarLinks = [
@@ -180,19 +180,6 @@ export const TestUser: User = {
   dateOfBirth: "1990-01-01",
   ssn: "123456789",
 };
-
-export const bankTestData: Bank[] = [
-  {
-    $id: "6627f07b00348f242ea9",
-    accountId: "x1GQb1lDrDHWX4BwkqQbI4qpQP1lL6tJ3VVo9",
-    bankId: "Wv7P6vNXRXiMkoKWPzeZS9Zm5JGWdXulLRNBq",
-    accessToken: "access-s",
-    fundingSourceUrl:
-      "https://api-sandbox.dwolla.com/funding-sources/8b3b3b3b-3b3b-3b3b-3b3b",
-    userId: "dsa",
-    sharableId: "sda",
-  },
-];
 
 export const transactionsTestData: Transaction[] = [
   {

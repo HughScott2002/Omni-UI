@@ -10,6 +10,7 @@ import {
   UserX,
   Ban,
   Trash2,
+  Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,6 +31,7 @@ import {
   deleteContact,
 } from "@/lib/contacts";
 import { Contact, ContactRequest } from "@/types/contact";
+import { TransferDialog } from "@/components/TransferDialog";
 
 // Define the table header data for contacts
 const contactTableHeaders: { label: string; icon: any }[] = [
@@ -62,11 +64,13 @@ const TableHeaderMaker = ({ label, icon: Icon }: TableHeaderMakerProps) => {
 
 interface OmniContactTableProps {
   accountId: string;
+  walletId?: string;
   onRefresh?: () => void;
 }
 
 export function OmniContactTable({
   accountId,
+  walletId,
   onRefresh,
 }: OmniContactTableProps) {
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -74,6 +78,8 @@ export function OmniContactTable({
   const [sentRequests, setSentRequests] = useState<ContactRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("contacts");
+  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -200,6 +206,7 @@ export function OmniContactTable({
   }
 
   return (
+    <>
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="contacts">Contacts ({contacts.length})</TabsTrigger>
@@ -284,6 +291,18 @@ export function OmniContactTable({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          {walletId && (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedContact(contact);
+                                setTransferDialogOpen(true);
+                              }}
+                              className="text-omni-blue"
+                            >
+                              <Send className="mr-2 h-4 w-4" />
+                              Send Money
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem
                             onClick={() =>
                               handleBlockContact(contact.contactId)
@@ -483,6 +502,25 @@ export function OmniContactTable({
         </div>
       </TabsContent>
     </Tabs>
+
+    {selectedContact && walletId && (
+      <TransferDialog
+        open={transferDialogOpen}
+        onOpenChange={setTransferDialogOpen}
+        receiverOmniTag={selectedContact.omniTag || ""}
+        receiverName={
+          selectedContact.firstName && selectedContact.lastName
+            ? `${selectedContact.firstName} ${selectedContact.lastName}`
+            : selectedContact.omniTag || "Contact"
+        }
+        senderWalletId={walletId}
+        onSuccess={() => {
+          fetchData();
+          onRefresh?.();
+        }}
+      />
+    )}
+  </>
   );
 }
 

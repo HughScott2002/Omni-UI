@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowDownLeft,
   ArrowRightLeft,
@@ -6,13 +8,18 @@ import {
   LucideIcon,
 } from "lucide-react";
 import OmniWalletCard from "./OmniWalletCard";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import OmniRequestPayment from "./OmniRequestPayment";
 import OmniSendMoney from "./OmniSendMoney";
 import Link from "next/link";
 import OmniFX from "./OmniFX";
+import { useAuth } from "./AuthContext";
+import { getListWallets } from "@/lib/fetch";
+import { getDefaultVirtualCard } from "@/lib/virtualCards";
+import { VirtualCard } from "@/types/virtualCard";
+import { Skeleton } from "./ui/skeleton";
 
 interface IconComponent {
   className?: string;
@@ -106,6 +113,40 @@ const triggerMoreButton = (
   />
 );
 const OmniDashboardWalletSection = () => {
+  const { user } = useAuth();
+  const [defaultCard, setDefaultCard] = useState<VirtualCard | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDefaultCard() {
+      if (!user?.id) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        // First, get the wallets for the user
+        const wallets = await getListWallets(user.id);
+
+        if (wallets && wallets.length > 0) {
+          // Get the default wallet or the first wallet
+          const defaultWallet = wallets.find((w) => w.isDefault) || wallets[0];
+
+          // Fetch the default virtual card for this wallet's account
+          const card = await getDefaultVirtualCard(defaultWallet.accountId);
+          setDefaultCard(card);
+        }
+      } catch (error) {
+        console.error("Error fetching default card:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchDefaultCard();
+  }, [user?.id]);
+
   return (
     <div className="min-h-[400px] max-h-[400px] border-2 border-omni-background-grey rounded-2xl h-[55%] w-full flex flex-col items-center px-6 py-6">
       <div className="flex w-full">
@@ -115,12 +156,29 @@ const OmniDashboardWalletSection = () => {
         <Ellipsis className="size-8" />
       </div>
 
-      <OmniWalletCard
-        balance={"13,543.32"}
-        cardNumber={"**** **** **** 7854"}
-        currency={"JMD"}
-        date={"11/22"}
-      />
+      {isLoading ? (
+        <Skeleton className="w-full h-48 rounded-2xl mt-2 bg-omni-text-grey animate-pulse" />
+      ) : defaultCard ? (
+        <OmniWalletCard
+          balance={defaultCard.availableBalance}
+          cardNumber={defaultCard.cardNumber}
+          currency={
+            defaultCard.currency as "JMD" | "USD" | "JPY" | "GBP" | "EUR"
+          }
+          cardBrand={defaultCard.cardBrand}
+          date={new Date(defaultCard.expiryDate).toLocaleDateString("en-US", {
+            month: "2-digit",
+            year: "2-digit",
+          })}
+        />
+      ) : (
+        <div className="w-full h-48 rounded-2xl mt-2 border-2 border-dashed flex items-center justify-center text-omni-text-grey">
+          <div className="text-center">
+            <p className="text-sm">No virtual card found</p>
+            <p className="text-xs mt-2">Create a wallet to get started</p>
+          </div>
+        </div>
+      )}
       <Ellipsis className="my-2 size-8 text-omni-text-grey" />
       <div className="flex gap-6 w-full justify-center ">
         <OmniSendMoney trigger={triggerSendMoneyButton} />

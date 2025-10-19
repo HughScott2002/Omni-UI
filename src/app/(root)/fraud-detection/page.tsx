@@ -13,17 +13,42 @@ import { Button } from "@/components/ui/button";
 import { Download, Settings2, ShieldCheck } from "lucide-react";
 import { useFraudDetection } from "@/hooks/useFraudDetection";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useState, useEffect } from "react";
+import { getFraudDetectionData, FraudDetectionData } from "@/lib/fraud-detection";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 const Fraud_Detection = () => {
-  const { data, loading, error } = useFraudDetection(3000);
+  const { data: mockData, loading: mockLoading, error: mockError } = useFraudDetection(3000);
   const {
     transactions,
     loading: transactionsLoading,
     error: transactionsError,
     newTransactionIds,
   } = useTransactions(2000);
+
+  const [data, setData] = useState<FraudDetectionData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const result = await getFraudDetectionData();
+        // Use API data if available, otherwise fallback to mock data
+        if (result.metrics.totalTransactions > 0 || mockData) {
+          setData(result.metrics.totalTransactions > 0 ? result : mockData);
+        }
+      } catch (err: any) {
+        setError(err.message);
+        // Fallback to mock data on error
+        setData(mockData);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [mockData]);
 
   if ((loading && !data) || transactionsLoading) {
     return (
