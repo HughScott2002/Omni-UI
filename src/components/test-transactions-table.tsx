@@ -1,20 +1,10 @@
 import React from "react";
 import { ArrowUpDown, ChevronDown, type LucideIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { Transaction } from "@/lib/transactions";
 
-// Define the transaction type
-type Transaction = {
-  name: string;
-  type: string;
-  date: string;
-  time: string;
-  invoiceId: string;
-  amount: string;
-  status: "Pending" | "Success" | "Failed";
-};
-
-// Define the data array
-const transactions: Transaction[] = [
+// Define the data array for fallback
+const mockTransactions = [
   {
     name: "Gym",
     type: "Payment",
@@ -221,7 +211,26 @@ const TableHeaderMaker = ({ label, icon: Icon }: TableHeaderMakerProps) => {
   );
 };
 
-export function OmniTransactionsTable() {
+interface OmniTransactionsTableProps {
+  transactions?: Transaction[];
+}
+
+export function OmniTransactionsTable({ transactions: apiTransactions }: OmniTransactionsTableProps = {}) {
+  const transactions = apiTransactions && apiTransactions.length > 0 ? apiTransactions : [];
+
+  const formatTransaction = (tx: Transaction) => ({
+    name: tx.description || tx.transactionType,
+    type: tx.transactionType,
+    date: new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }).toUpperCase(),
+    time: new Date(tx.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).toUpperCase(),
+    invoiceId: tx.reference,
+    amount: `${tx.transactionCategory === "credit" ? "+" : "-"}$${tx.amount.toFixed(2)}`,
+    status: tx.status === "completed" ? "Success" as const : tx.status === "failed" ? "Failed" as const : "Pending" as const,
+  });
+
+  const displayTransactions = transactions.length > 0
+    ? transactions.map(formatTransaction)
+    : mockTransactions;
   return (
     <div className="rounded-lg overflow-y-auto scroll-">
       <table className="min-w-full">
@@ -235,7 +244,7 @@ export function OmniTransactionsTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-omni-background-grey">
-          {transactions.map((transaction, index) => (
+          {displayTransactions.map((transaction, index) => (
             <tr key={index} className="hover:bg-omni-background-grey">
               <TableCell>
                 <div className="flex items-center">

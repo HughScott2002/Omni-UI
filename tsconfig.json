@@ -27,7 +27,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/(auth)/login/page.old",
-    "src/app/(auth)/register/page.old"
+    "src/app/(auth)/register/page.old",
+    "src/app/(root)/page.tsx"
   ],
   "exclude": ["node_modules"]
 }

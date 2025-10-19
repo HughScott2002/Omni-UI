@@ -1,7 +1,9 @@
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { Input } from "./ui/input";
-import OmniWalletCard from "./OmniWalletCard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
 
 type OmniCardItemProps = {
   src: string;
@@ -66,42 +68,93 @@ const OmniCardItem = ({
     </div>
   );
 };
-const OmniDialogSendMoney = () => {
+interface OmniDialogSendMoneyProps {
+  wallets: OmniWalletData[];
+  contacts: any[];
+  selectedWallet: string;
+  selectedContact: string;
+  amount: string;
+  description: string;
+  onWalletChange: (walletId: string) => void;
+  onContactChange: (contactId: string) => void;
+  onAmountChange: (amount: string) => void;
+  onDescriptionChange: (description: string) => void;
+}
+
+const OmniDialogSendMoney = ({
+  wallets,
+  contacts,
+  selectedWallet,
+  selectedContact,
+  amount,
+  description,
+  onWalletChange,
+  onContactChange,
+  onAmountChange,
+  onDescriptionChange,
+}: OmniDialogSendMoneyProps) => {
   return (
     <>
       <div className="text-base font-bold text-omni-pitch-black font-manrope flex my-4">
-        <span className="flex-1">CHOOSE METHOD</span>
-        <div className="flex gap-1 items-center justify-center rounded-full px-2 hover:text-omni-blue text-omni-text-grey cursor-pointer transition-all ease-in-out">
-          <span className="font-medium text-sm">Add</span>
-          <Plus className="size-4" />
-          {/* <ChevronLeft className="size-4" />
-    <ChevronRight className="size-4 text-omni-blue" /> */}
-        </div>
+        <span className="flex-1">TRANSFER DETAILS</span>
       </div>
-      <div className="flex flex-col h-fit w-full gap-2">
+      <div className="flex flex-col h-fit w-full gap-4">
         <div className="flex flex-col gap-2">
-          {paymentMethods.map((method) => (
-            <OmniCardItem
-              key={method.title}
-              {...method}
-              // onClick={() => {}}
-              selected={false}
-            />
-          ))}
+          <Label htmlFor="wallet">From Wallet</Label>
+          <Select value={selectedWallet} onValueChange={onWalletChange}>
+            <SelectTrigger id="wallet" className="w-full">
+              <SelectValue placeholder="Select wallet" />
+            </SelectTrigger>
+            <SelectContent>
+              {wallets.map((wallet) => (
+                <SelectItem key={wallet.id} value={wallet.id}>
+                  {wallet.type} - ${wallet.balance.toFixed(2)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        {/* <div className="flex flex-col gap-4  px-2 justify-center items-center">
-          <OmniWalletCard
-            balance={""}
-            cardNumber={""}
-            currency={"JMD"}
-            date={""}
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="contact">To Contact</Label>
+          <Select value={selectedContact} onValueChange={onContactChange}>
+            <SelectTrigger id="contact" className="w-full">
+              <SelectValue placeholder="Select contact" />
+            </SelectTrigger>
+            <SelectContent>
+              {contacts.map((contact) => (
+                <SelectItem key={contact.contactId} value={contact.contactId}>
+                  {contact.omniTag} - {contact.firstName} {contact.lastName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="amount">Amount</Label>
+          <Input
+            id="amount"
+            type="number"
+            step="0.01"
+            value={amount}
+            onChange={(e) => onAmountChange(e.target.value)}
+            className="w-full h-12 text-omni-pitch-black rounded-xl"
+            placeholder="0.00"
           />
-        </div> */}
-        <Input
-          type="number"
-          className="w-full h-14 text-omni-pitch-black rounded-xl col-span-2"
-          placeholder="Enter Amount"
-        />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="description">Description (Optional)</Label>
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => onDescriptionChange(e.target.value)}
+            className="w-full text-omni-pitch-black rounded-xl resize-none"
+            placeholder="What's this for?"
+            rows={2}
+          />
+        </div>
       </div>
     </>
   );

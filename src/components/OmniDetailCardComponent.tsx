@@ -48,9 +48,7 @@ const CardButtons = ({ buttons }: CardButtonsProps) => {
       {buttons.map((button, index) => {
         return (
           <Link key={index} href={button.href}>
-            <div
-              className="px-2 mt-auto flex rounded-lg   gap-2 justify-center items-center "
-            >
+            <div className="px-2 mt-auto flex rounded-lg   gap-2 justify-center items-center ">
               <button.icon className="size-4 text-white" />
               <span className="text-white text-sm">{button.label}</span>
             </div>
@@ -114,7 +112,7 @@ const ProgressBar = () => {
       value={progress}
     >
       <Progress.Indicator
-        className="ease-in size-full bg-omni-blue transition-transform duration-[660ms]"
+        className="ease-in size-full bg-omni-blue transition-transform"
         style={{ transform: `translateX(-${100 - progress}%)` }}
       />
     </Progress.Root>

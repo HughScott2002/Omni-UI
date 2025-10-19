@@ -6,14 +6,19 @@ type recentContactsItems = {
   image: string;
   label: string;
   href: string;
+  contactId?: string;
 };
 
 type OmniDialogRecentContactsProps = {
   data: recentContactsItems[];
+  onSelect?: (contactId: string) => void;
+  selected?: string;
 };
 
 const OmniDialogRecentContacts = ({
   data: recentContacts,
+  onSelect,
+  selected,
 }: OmniDialogRecentContactsProps) => {
   return (
     <>
@@ -31,21 +36,17 @@ const OmniDialogRecentContacts = ({
             <span className="font-medium text-xm">Add</span>
           </div>
         </Link>
-        {recentContacts.map(({ image, label, href }: recentContactsItems) => (
-          // <Link key={href} href={href}>
-          //   <div className="flex flex-col justify-center items-center gap-2 transition-all ease-in-out">
-          //     <Icon className="size-12 p-4 bg-[#D9D9D9] rounded-full hover:bg-omni-blue hover:text-white" />
-          //     <span className="font-medium text-xm">{label}</span>
-          //   </div>
-          // </Link>
-          <Link key={href} href={"#"}>
-            <div className="hover:text-omni-blue flex flex-col justify-center items-center gap-2 transition-all ease-in-out">
-              <div className="size-12">
-                <Image src={image} width={100} height={100} alt={""} />
-              </div>
-              <span className="font-medium text-xm">{label}</span>
+        {recentContacts.map(({ image, label, href, contactId }: recentContactsItems) => (
+          <div
+            key={contactId || href}
+            onClick={() => contactId && onSelect?.(contactId)}
+            className={`cursor-pointer hover:text-omni-blue flex flex-col justify-center items-center gap-2 transition-all ease-in-out ${selected === contactId ? "text-omni-blue" : ""}`}
+          >
+            <div className={`size-12 rounded-full ${selected === contactId ? "ring-2 ring-omni-blue" : ""}`}>
+              <Image src={image} width={100} height={100} alt={label} className="rounded-full" />
             </div>
-          </Link>
+            <span className="font-medium text-xs">{label}</span>
+          </div>
         ))}
       </div>
     </>

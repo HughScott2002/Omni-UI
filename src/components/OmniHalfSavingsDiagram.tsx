@@ -87,7 +87,7 @@ const ProgressBar: FC<ProgressBarProps> = ({ value, colour }) => {
       value={progress}
     >
       <Progress.Indicator
-        className="ease-in size-full bg-omni-blue transition-transform duration-[660ms]"
+        className="ease-in size-full bg-omni-blue transition-transform"
         style={{ transform: `translateX(-${100 - progress}%)` }}
       />
     </Progress.Root>
