@@ -18,13 +18,11 @@ const OmniAuthRightSide = () => {
           </div>
           <div className="text-white text-center ">
             <h2 className="text-white text-4xl my-4 flex-1 font-extrabold font-manrope text-nowrap w-full px-auto ">
-              More than just Money
+              Getting out of the way.
             </h2>
             <p className="text-white font-medium text-sm text-opacity-75 font-manrope w-full text-pretty ">
-              Omni helps you set saving goals, earn cash back offers. Go to
-              disclaimer for more details and get paychecks up to two days
-              early. Get a $20 bonus when you receive qualifying direct
-              deposits.
+              Omni helps you send money person to person instally across the
+              carribbean. It's always alive, always ready to serve, always safe.
             </p>
           </div>
         </div>
