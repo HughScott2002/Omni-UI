@@ -1,7 +1,7 @@
 import Image from "next/image";
 const OmniInactiveDevelopment = () => {
   return (
-    <div className="bg-Omni-yellow rounded-3xl h-full w-full flex flex-col gap-4 justify-center items-center relative">
+    <div className="bg-omni-yellow rounded-3xl h-full w-full flex flex-col gap-4 justify-center items-center relative">
       <Image
         src="/icons/Omni-Logo.svg"
         alt="Omni Logo"

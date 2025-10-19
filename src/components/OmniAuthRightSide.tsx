@@ -4,7 +4,7 @@ import OmniLicence from "./OmniLicence";
 
 const OmniAuthRightSide = () => {
   return (
-    <div className="bg-Omni-blue hidden lg:flex items-center justify-center w-full h-screen">
+    <div className="bg-omni-blue hidden lg:flex items-center justify-center w-full h-screen">
       <div className="bg-auth-right-bg bg-no-repeat bg-center bg-contain w-full h-full flex flex-col items-center justify-center">
         <div className=" h-fit w-4/5">
           <div className=" flex justify-center items-center align-middle w-full">

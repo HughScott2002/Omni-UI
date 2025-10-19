@@ -323,9 +323,9 @@ export function OmniAuthProvider({ children }: { children: React.ReactNode }) {
           >
             <Loader2
               size={20}
-              className="animate-spin text-Omni-blue w-6 h-6"
+              className="animate-spin text-omni-blue w-6 h-6"
             />
-            <span className="font-poppins text-Omni-blue text-lg ml-2">
+            <span className="font-poppins text-omni-blue text-lg ml-2">
               Loading...
             </span>
           </motion.div>
