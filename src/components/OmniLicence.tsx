@@ -5,18 +5,18 @@ import React from "react";
 
 const OmniLicence = () => {
   return (
-    <p className="flex items-center flex-wrap gap-2 text-sm text-Omni-text-grey flex-col">
+    <p className="flex items-center flex-wrap gap-2 text-sm text-omni-text-grey flex-col">
       <div className="">
         <Link
           href="https://github.com/HughScott2002/Omni-UI"
-          className="text-Omni-blue hover:text-blue-800"
+          className="text-omni-blue hover:text-blue-800"
         >
           Omni
         </Link>
         <span> by </span>
         <Link
           href="https://github.com/HughScott2002/"
-          className="text-Omni-blue hover:text-blue-800"
+          className="text-omni-blue hover:text-blue-800"
         >
           Hugh Scott
         </Link>

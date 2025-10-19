@@ -43,24 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const checkSession = async () => {
       const startTime = Date.now();
       try {
-        // TODO: Change this back to the real backend endpoint
-        // const response = await fetch(
-        //   "http://localhost/api/users/auth/check-session",
-        //   {
-        //     credentials: "include",
-        //   }
-        // );
-
-        // TEMPORARY: Using test endpoint for development
         const response = await fetch(
-          "/api/test/stay-logged-in",
+          "http://localhost/api/users/auth/check-session",
           {
             credentials: "include",
           }
         );
         if (response.ok) {
-          const userData = await response.json();
-          setUser(userData.user);
+          // const userData = await response.json();
+          // setUser(userData.user);
           setLastRefresh(Date.now());
         }
       } catch (error) {
@@ -208,9 +199,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // if (loading) {
   //   return (
   //     <div className="w-full h-screen flex justify-center items-center transition">
-  //       <Loader2 size={20} className="animate-spin text-Omni-blue w-6 h-6" />{" "}
+  //       <Loader2 size={20} className="animate-spin text-omni-blue w-6 h-6" />{" "}
   //       &nbsp;
-  //       <span className="font-poppins text-Omni-blue text-lg ">
+  //       <span className="font-poppins text-omni-blue text-lg ">
   //         Loading...
   //       </span>
   //     </div>
@@ -233,9 +224,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           >
             <Loader2
               size={20}
-              className="animate-spin text-Omni-blue w-6 h-6"
+              className="animate-spin text-omni-blue w-6 h-6"
             />
-            <span className="font-poppins text-Omni-blue text-lg ml-2">
+            <span className="font-poppins text-omni-blue text-lg ml-2">
               Loading...
             </span>
           </motion.div>
