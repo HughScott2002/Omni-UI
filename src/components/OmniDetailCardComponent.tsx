@@ -47,9 +47,8 @@ const CardButtons = ({ buttons }: CardButtonsProps) => {
     <div className="flex flex-wrap gap-2 w-full justify-between rounded-lg bg-omni-text-grey p-2">
       {buttons.map((button, index) => {
         return (
-          <Link href={button.href}>
+          <Link key={index} href={button.href}>
             <div
-              key={index}
               className="px-2 mt-auto flex rounded-lg   gap-2 justify-center items-center "
             >
               <button.icon className="size-4 text-white" />

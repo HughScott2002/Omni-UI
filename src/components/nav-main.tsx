@@ -70,9 +70,9 @@ export function NavMain({
                 </Link>
               </CollapsibleTrigger>
               {item.items?.map((subItem) => (
-                <CollapsibleContent className="">
+                <CollapsibleContent key={subItem.title} className="">
                   <SidebarMenuSub className="">
-                    <SidebarMenuSubItem key={subItem.title}>
+                    <SidebarMenuSubItem>
                       <Link href={subItem.url}>
                         <SidebarMenuSubButton asChild>
                           <div className="grid grid-rows-2 py-2 size-full gap-1 justify-start items-start ml-4 text-base">

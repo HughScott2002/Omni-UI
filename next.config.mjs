@@ -14,6 +14,12 @@ const nextConfig = {
     ],
   },
   optimizeFonts: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

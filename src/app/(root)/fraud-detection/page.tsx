@@ -89,11 +89,7 @@ const Fraud_Detection = () => {
               ChartContainer={item.chartContainer}
               key={index}
               label={item.label}
-              title={item.value}
-              animate={item.animate}
-              prefix={item.prefix}
-              suffix={item.suffix}
-              decimals={item.decimals}
+              title={String(item.value)}
             />
           ))}
         </div>
