@@ -50,8 +50,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         );
         if (response.ok) {
-          // const userData = await response.json();
-          // setUser(userData.user);
+          const userData = await response.json();
+          setUser(userData.user);
           setLastRefresh(Date.now());
         }
       } catch (error) {

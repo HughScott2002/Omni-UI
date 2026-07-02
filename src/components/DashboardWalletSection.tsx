@@ -181,7 +181,7 @@ const OmniDashboardWalletSection = () => {
       )}
       <Ellipsis className="my-2 size-8 text-omni-text-grey" />
       <div className="flex gap-6 w-full justify-center ">
-        <OmniSendMoney trigger={triggerSendMoneyButton} />
+        <OmniSendMoney accountId={user?.id} trigger={triggerSendMoneyButton} />
         <OmniRequestPayment trigger={triggerRequestPaymentButton} />
         <OmniFX trigger={triggerExchangeButton} />
 

@@ -8,12 +8,25 @@ import { Button } from "@/components/ui/button";
 import { Plus, Settings2 } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useNotifications } from "@/hooks/useNotifications";
+import { getListWallets } from "@/lib/fetch";
 
 const ContactsPage = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [walletId, setWalletId] = useState<string>("");
   const { user } = useAuth();
   const { notifications } = useNotifications(user?.id);
+
+  // The table's Send action needs the sender's default wallet
+  useEffect(() => {
+    if (!user?.id) return;
+    getListWallets(user.id).then((wallets) => {
+      if (wallets.length > 0) {
+        const defaultWallet = wallets.find((w) => w.isDefault) || wallets[0];
+        setWalletId(defaultWallet.walletId);
+      }
+    });
+  }, [user?.id]);
 
   const handleContactAdded = () => {
     // Trigger a refresh of the contact table
@@ -66,7 +79,7 @@ const ContactsPage = () => {
           </Button>
         </div>
       </header>
-      <OmniContactTable accountId={user.id} key={refreshKey} />
+      <OmniContactTable accountId={user.id} walletId={walletId} key={refreshKey} />
       <AddContactDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}

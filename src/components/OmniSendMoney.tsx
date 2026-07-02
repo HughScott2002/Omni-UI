@@ -16,7 +16,7 @@ import { ReactNode, useState, useEffect } from "react";
 import OmniDialogRecentContacts from "./OmniDialogRecentContacts";
 import OmniDialogSendMoney from "./OmniDialogSendMoney";
 import { getContacts } from "@/lib/contacts";
-import { getWallets } from "@/lib/fetch";
+import { getListWallets } from "@/lib/fetch";
 import { transferMoney } from "@/lib/transactions";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -84,14 +84,16 @@ const OmniSendMoney = ({ trigger, accountId, onSuccess }: OmniSendMoneyPros) => 
     try {
       const [contactsData, walletsData] = await Promise.all([
         getContacts(accountId),
-        getWallets(accountId),
+        getListWallets(accountId),
       ]);
 
-      setContacts(contactsData || []);
+      setContacts(contactsData.contacts || []);
       setWallets(Array.isArray(walletsData) ? walletsData : []);
 
       if (Array.isArray(walletsData) && walletsData.length > 0) {
-        setSelectedWallet(walletsData[0].id);
+        const defaultWallet =
+          walletsData.find((w) => w.isDefault) || walletsData[0];
+        setSelectedWallet(defaultWallet.walletId);
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -108,7 +110,8 @@ const OmniSendMoney = ({ trigger, accountId, onSuccess }: OmniSendMoneyPros) => 
       return;
     }
 
-    const contact = contacts.find(c => c.contactId === selectedContact);
+    // Contacts are keyed by omniTag: the server's ContactInfo has no contactId
+    const contact = contacts.find(c => c.omniTag === selectedContact);
     if (!contact) return;
 
     setLoading(true);
@@ -145,7 +148,7 @@ const OmniSendMoney = ({ trigger, accountId, onSuccess }: OmniSendMoneyPros) => 
     image: "/placeholder/Ian.png",
     label: c.omniTag || "Contact",
     href: "#",
-    contactId: c.contactId,
+    contactId: c.omniTag,
   }));
 
   return (

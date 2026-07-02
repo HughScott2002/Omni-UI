@@ -107,7 +107,7 @@ const OmniDialogSendMoney = ({
             </SelectTrigger>
             <SelectContent>
               {wallets.map((wallet) => (
-                <SelectItem key={wallet.id} value={wallet.id}>
+                <SelectItem key={wallet.walletId} value={wallet.walletId}>
                   {wallet.type} - ${wallet.balance.toFixed(2)}
                 </SelectItem>
               ))}
@@ -123,7 +123,7 @@ const OmniDialogSendMoney = ({
             </SelectTrigger>
             <SelectContent>
               {contacts.map((contact) => (
-                <SelectItem key={contact.contactId} value={contact.contactId}>
+                <SelectItem key={contact.omniTag} value={contact.omniTag}>
                   {contact.omniTag} - {contact.firstName} {contact.lastName}
                 </SelectItem>
               ))}
