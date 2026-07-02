@@ -31,6 +31,8 @@ export function useTransactions(pollInterval: number = 2000) {
     };
 
     const pollForNewTransactions = async () => {
+      // Skip polling while the tab is hidden; resumes on next tick when visible
+      if (document.hidden) return;
       try {
         const response = await fetch("/api/transactions?poll=true");
         if (!response.ok) {

@@ -27,8 +27,10 @@ export function useFraudDetection(refreshInterval: number = 3000) {
     // Initial fetch
     fetchData();
 
-    // Set up interval for real-time updates
-    const interval = setInterval(fetchData, refreshInterval);
+    // Set up interval for real-time updates; skip ticks while the tab is hidden
+    const interval = setInterval(() => {
+      if (!document.hidden) fetchData();
+    }, refreshInterval);
 
     // Cleanup
     return () => clearInterval(interval);
