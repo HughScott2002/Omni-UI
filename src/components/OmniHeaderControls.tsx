@@ -1,3 +1,5 @@
+"use client";
+
 import OmniNotification from "@/components/OmniNotification";
 
 import { ArrowLeftRight, BellDot, ChevronDown, Search } from "lucide-react";
@@ -11,14 +13,14 @@ import { CommandShortcut } from "./ui/command";
 import { Badge } from "./ui/badge";
 import OmniQR from "./OmniQR";
 import OmniSendMoney from "./OmniSendMoney";
+import { useAuth } from "./AuthContext";
 
 const OmniMoveButton = () => {
-  // TODO: Get actual accountId from auth context
-  const accountId = ""; // Replace with actual accountId from auth
+  const { user } = useAuth();
 
   return (
     <OmniSendMoney
-      accountId={accountId}
+      accountId={user?.id}
       trigger={
         <div className="p-2 flex items-center">
           <ArrowLeftRight className="size-4" />
