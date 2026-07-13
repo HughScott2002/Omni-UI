@@ -114,17 +114,17 @@ export const OmniEmpty: FC<OmniEmptyProps> = ({
 export const OmniStatCardSkeleton: FC = () => (
   <div className="size-full flex flex-col justify-between gap-3">
     <div className="space-y-2">
-      <Skeleton className="h-3 w-16 rounded-full" />
-      <Skeleton className="h-6 w-24 rounded-lg" />
+      <Skeleton className="h-3 w-16 rounded-full bg-omni-text-grey/25" />
+      <Skeleton className="h-6 w-24 rounded-lg bg-omni-text-grey/25" />
     </div>
-    <Skeleton className="h-14 w-full rounded-lg" />
+    <Skeleton className="h-14 w-full rounded-lg bg-omni-text-grey/25" />
   </div>
 );
 
 export const OmniPanelSkeleton: FC<{ rows?: number }> = ({ rows = 3 }) => (
   <div className="size-full flex flex-col gap-3 py-2">
     {Array.from({ length: rows }, (_, i) => (
-      <Skeleton key={i} className="h-12 w-full rounded-xl" />
+      <Skeleton key={i} className="h-12 w-full rounded-xl bg-omni-text-grey/25" />
     ))}
   </div>
 );
