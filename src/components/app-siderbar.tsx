@@ -7,16 +7,11 @@ import {
   Command,
   Contact,
   GalleryVerticalEnd,
-  PiggyBank,
   House,
   LogOut,
   LucideIcon,
   Settings,
   Wallet,
-  BadgePoundSterling,
-  BotMessageSquare,
-  Ghost,
-  ShieldX,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import {
@@ -61,11 +56,11 @@ export const sideBarData = {
     },
   ],
   navMain: [
-    // {
-    //   title: "Dashboard",
-    //   url: "/",
-    //   icon: House,
-    // },
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: House,
+    },
     {
       title: "My Wallets", // For the sake of time wallet will have transactions
       url: "/my-wallets",
@@ -89,20 +84,15 @@ export const sideBarData = {
       //   },
       // ],
     },
-    // {
-    //   title: "Transactions",
-    //   url: "/transactions",
-    //   icon: ArrowRightLeft,
-    // },
+    {
+      title: "Transactions",
+      url: "/transactions",
+      icon: ArrowRightLeft,
+    },
     {
       title: "Contacts",
       url: "/contacts",
       icon: Contact,
-    },
-    {
-      title: "Fraud Detection",
-      url: "/fraud-detection",
-      icon: ShieldX,
     },
     // {
     //   title: "FX Exchange",
