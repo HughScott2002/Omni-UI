@@ -7,7 +7,6 @@ import {
   CheckCheck,
   Settings,
   Trash2,
-  Wifi,
   WifiOff,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -81,14 +80,13 @@ const OmniNotification = () => {
             </span>
           )}
 
-          {/* Connection Status Indicator */}
-          <span
-            className={cn(
-              "absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white",
-              isConnected ? "bg-omni-green" : "bg-omni-text-grey"
-            )}
-            title={isConnected ? "Connected" : "Disconnected"}
-          />
+          {/* Connection status — only shown when something is wrong */}
+          {!isConnected && (
+            <span
+              className="absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white bg-omni-red"
+              title="Disconnected"
+            />
+          )}
         </button>
       </DropdownMenu.Trigger>
 
@@ -101,14 +99,12 @@ const OmniNotification = () => {
           <div className="flex justify-between items-center w-full text-sm font-semibold px-4 py-2">
             <div className="flex items-center gap-2">
               <span>Notifications</span>
-              {/* Connection indicator */}
-              <div title={isConnected ? "Real-time connected" : "Disconnected"}>
-                {isConnected ? (
-                  <Wifi className="size-4 text-omni-green" />
-                ) : (
-                  <WifiOff className="size-4 text-omni-text-grey" />
-                )}
-              </div>
+              {/* Only surface a problem — connected is the normal state */}
+              {!isConnected && (
+                <div title="Real-time updates disconnected">
+                  <WifiOff className="size-4 text-omni-red" />
+                </div>
+              )}
             </div>
 
             {unreadCount > 0 && (
