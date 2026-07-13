@@ -20,6 +20,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   register: (userData: any) => Promise<void>;
   refreshToken: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   dump: (data: any) => Promise<void>;
 }
 
@@ -66,6 +67,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     checkSession();
   }, []);
+
+  // Re-fetch the session user (e.g. after KYC approval or a profile edit)
+  const refreshUser = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/users/auth/check-session`,
+        { credentials: "include" }
+      );
+      if (response.ok) {
+        const userData = await response.json();
+        if (userData.user) {
+          setUser(userData.user);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+    }
+  };
 
   const refreshToken = async () => {
     if (!shouldRefresh()) {
@@ -211,7 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register, refreshToken, dump }}
+      value={{ user, login, logout, register, refreshToken, refreshUser, dump }}
     >
       <AnimatePresence mode="wait">
         {loading ? (
