@@ -20,6 +20,7 @@ import { getListWallets } from "@/lib/fetch";
 import { getDefaultVirtualCard } from "@/lib/virtualCards";
 import { VirtualCard } from "@/types/virtualCard";
 import { Skeleton } from "./ui/skeleton";
+import OmniVerifyAccount from "./OmniVerifyAccount";
 
 interface IconComponent {
   className?: string;
@@ -181,11 +182,30 @@ const OmniDashboardWalletSection = () => {
       )}
       <Ellipsis className="my-2 size-8 text-omni-text-grey" />
       <div className="flex gap-6 w-full justify-center ">
-        <OmniSendMoney accountId={user?.id} trigger={triggerSendMoneyButton} />
-        <OmniRequestPayment trigger={triggerRequestPaymentButton} />
-        <OmniFX trigger={triggerExchangeButton} />
-
-        {/* <Link href="/fx">{triggerExchangeButton}</Link> */}
+        {user?.kycStatus === "approved" ? (
+          <>
+            <OmniSendMoney
+              accountId={user?.id}
+              trigger={triggerSendMoneyButton}
+            />
+            <OmniRequestPayment trigger={triggerRequestPaymentButton} />
+            <OmniFX trigger={triggerExchangeButton} />
+          </>
+        ) : (
+          <>
+            {/* Money movement is locked until the account is verified —
+                tapping any action starts verification instead. */}
+            <OmniVerifyAccount trigger={triggerSendMoneyButton} />
+            <OmniVerifyAccount trigger={triggerRequestPaymentButton} />
+            <OmniVerifyAccount
+              trigger={
+                <Button className="size-full p-0 m-0" variant={"ghost"}>
+                  {triggerExchangeButton}
+                </Button>
+              }
+            />
+          </>
+        )}
         <Link href={"/my-wallets"}>{triggerMoreButton}</Link>
       </div>
     </div>
