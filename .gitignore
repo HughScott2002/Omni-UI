@@ -28,8 +28,14 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# vercel
+# Dotfile folders
 .vercel
+.claude
+.agents
+
+#Agents
+CLAUDE.md
+AGENTS.md
 
 # typescript
 *.tsbuildinfo
