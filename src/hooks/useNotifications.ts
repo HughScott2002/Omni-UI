@@ -5,8 +5,10 @@ import {
   WebSocketMessage
 } from '@/types/notification';
 
-const API_BASE = process.env.NEXT_PUBLIC_NOTIFICATION_API || 'http://localhost:8000';
-const WS_BASE = process.env.NEXT_PUBLIC_NOTIFICATION_WS || 'ws://localhost:8000';
+import { API_BASE_URL, WS_BASE_URL } from '@/lib/api';
+
+const API_BASE = process.env.NEXT_PUBLIC_NOTIFICATION_API || API_BASE_URL;
+const WS_BASE = process.env.NEXT_PUBLIC_NOTIFICATION_WS || WS_BASE_URL;
 
 export function useNotifications(accountId: string | null | undefined) {
   const [notifications, setNotifications] = useState<Notification[]>([]);

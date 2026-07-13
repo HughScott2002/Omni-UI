@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -44,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const startTime = Date.now();
       try {
         const response = await fetch(
-          "http://localhost/api/users/auth/check-session",
+          `${API_BASE_URL}/api/users/auth/check-session`,
           {
             credentials: "include",
           }
@@ -72,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     try {
-      const response = await fetch("http://localhost/api/users/auth/refresh", {
+      const response = await fetch(`${API_BASE_URL}/api/users/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -96,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string) => {
     try {
       const response = await fetch(
-        "http://localhost/api/users/auth/account/login",
+        `${API_BASE_URL}/api/users/auth/account/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -130,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
-      await fetch("http://localhost/api/users/auth/account/logout", {
+      await fetch(`${API_BASE_URL}/api/users/auth/account/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -145,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const register = async (userData: any) => {
     try {
       const response = await fetch(
-        "http://localhost/api/users/auth/account/register",
+        `${API_BASE_URL}/api/users/auth/account/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -176,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const dump = async (data: any) => {
     try {
-      const response = await fetch("http://localhost/api/users/dump", {
+      const response = await fetch(`${API_BASE_URL}/api/users/dump`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
