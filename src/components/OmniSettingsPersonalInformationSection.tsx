@@ -1,100 +1,159 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+"use client";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import {
+  ProfileUpdate,
+  updateProfile,
+  UserProfile,
+} from "@/lib/settings";
+import { useAuth } from "./AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { OmniOffline, OmniPanelSkeleton } from "./OmniCardState";
+import { DashboardStatus } from "@/hooks/useDashboardData";
 
-interface PersonalInfoField {
+interface FieldDef {
+  key: keyof ProfileUpdate;
   label: string;
   placeholder: string;
   type?: string;
-  gridSpan?: boolean;
 }
 
-interface AddressField {
-  label: string;
-  placeholder: string;
+const personalInfoFields: FieldDef[] = [
+  { key: "firstName", label: "First Name", placeholder: "Enter your first name" },
+  { key: "lastName", label: "Last Name", placeholder: "Enter your last name" },
+  { key: "dob", label: "Date of birth", placeholder: "", type: "date" },
+  { key: "phone", label: "Phone number", placeholder: "Enter your phone number", type: "tel" },
+  { key: "govId", label: "Government ID", placeholder: "SSN / Government ID" },
+];
+
+const addressFields: FieldDef[] = [
+  { key: "country", label: "Country", placeholder: "Enter your country" },
+  { key: "state", label: "State / Parish", placeholder: "Enter your state" },
+  { key: "city", label: "City", placeholder: "Enter your city" },
+  { key: "address", label: "Address", placeholder: "Enter your address" },
+  { key: "postalCode", label: "Postal code", placeholder: "Enter your postal code" },
+];
+
+const emptyForm: ProfileUpdate = {
+  firstName: "",
+  lastName: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  country: "",
+  currency: "",
+  postalCode: "",
+  dob: "",
+  govId: "",
+};
+
+interface OmniSettingsPersonalInformationSectionProps {
+  profile: UserProfile | null;
+  status: DashboardStatus;
+  onSaved: () => void;
+  onRetry: () => void;
 }
 
-const personalInfoFields: PersonalInfoField[] = [
-  {
-    label: "First Name",
-    placeholder: "Enter your first name",
-  },
-  {
-    label: "Last Name",
-    placeholder: "Enter your last name",
-  },
-  {
-    label: "Street Address",
-    placeholder: "",
-  },
-  {
-    label: "City",
-    placeholder: "",
-    type: "date",
-  },
-  {
-    label: "Phone number",
-    placeholder: "Enter your phone number",
-    type: "tel",
-  },
-];
+const OmniSettingsPersonalInformationSection: React.FC<
+  OmniSettingsPersonalInformationSectionProps
+> = ({ profile, status, onSaved, onRetry }) => {
+  const { refreshUser } = useAuth();
+  const { toast } = useToast();
+  const [form, setForm] = useState<ProfileUpdate>(emptyForm);
+  const [saving, setSaving] = useState(false);
 
-const addressFields: AddressField[] = [
-  {
-    label: "Country",
-    placeholder: "Select your country",
-  },
-  {
-    label: "City",
-    placeholder: "Enter your city",
-  },
-  {
-    label: "Address",
-    placeholder: "Enter your address",
-  },
-  {
-    label: "Postal code",
-    placeholder: "Enter your postal code",
-  },
-];
+  useEffect(() => {
+    if (profile) {
+      setForm({
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
+        phone: profile.phone ?? "",
+        address: profile.address ?? "",
+        city: profile.city ?? "",
+        state: profile.state ?? "",
+        country: profile.country ?? "",
+        currency: profile.currency ?? "",
+        postalCode: profile.postalCode ?? "",
+        dob: profile.dob ?? "",
+        govId: profile.govId ?? "",
+      });
+    }
+  }, [profile]);
 
-const PersonalInfoForm: React.FC = () => (
-  <div className="grid gap-6 overflow-y-auto">
-    <div className="grid gap-4 sm:grid-cols-2">
-      {personalInfoFields.map((field, index) => (
-        <>
-          {/* <OmniCustomLoginInput control={[]} /> */}
-          <div key={index} className="space-y-2">
-            <Label className="text-sm text-muted-foreground">
-              {field.label}
-            </Label>
-            <Input
-              type={field.type || "text"}
-              placeholder={field.placeholder}
-            />
-          </div>
-        </>
-      ))}
-    </div>
+  const setField = (key: keyof ProfileUpdate) => (value: string) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
-    <Separator className="my-4" />
+  const handleSave = async () => {
+    if (!profile) return;
+    setSaving(true);
+    try {
+      await updateProfile(profile.accountId, form);
+      // Name may appear in the header/profile menu — keep the session in sync
+      await refreshUser();
+      onSaved();
+      toast({
+        title: "Profile updated",
+        description: "Your details have been saved.",
+      });
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast({
+        title: "Couldn't save your details",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    <h3 className="text-lg font-medium">Personal Address</h3>
+  if (status === "loading") {
+    return (
+      <div className="max-w-2xl">
+        <OmniPanelSkeleton rows={6} />
+      </div>
+    );
+  }
+  if (status === "error" || !profile) {
+    return (
+      <div className="h-64">
+        <OmniOffline onRetry={onRetry} />
+      </div>
+    );
+  }
 
-    <div className="grid gap-4 sm:grid-cols-2">
-      {addressFields.map((field, index) => (
-        <div key={index} className="space-y-2">
-          <label className="text-sm text-muted-foreground">{field.label}</label>
-          <Input placeholder={field.placeholder} />
-        </div>
-      ))}
-    </div>
-  </div>
-);
+  const initials =
+    `${profile.firstName?.[0] ?? ""}${profile.lastName?.[0] ?? ""}`.toUpperCase() ||
+    "•";
 
-const OmniSettingsPersonalInformationSection: React.FC = () => {
+  const statusBorder =
+    profile.kycStatus === "approved"
+      ? "border-omni-green"
+      : profile.kycStatus === "rejected"
+      ? "border-omni-red"
+      : "border-omni-yellow";
+
+  const renderFields = (fields: FieldDef[]) =>
+    fields.map((field) => (
+      <div key={field.key} className="space-y-2">
+        <Label className="text-sm text-muted-foreground">{field.label}</Label>
+        <Input
+          type={field.type || "text"}
+          placeholder={field.placeholder}
+          value={form[field.key]}
+          onChange={(e) => setField(field.key)(e.target.value)}
+        />
+      </div>
+    ));
+
   return (
     <>
       <div className="mb-8">
@@ -102,26 +161,50 @@ const OmniSettingsPersonalInformationSection: React.FC = () => {
       </div>
 
       <div className="mb-8 flex md:flex-col justify-center items-center gap-4 w-full ">
-        <Avatar className="size-24 border-4 border-omni-blue">
-          <AvatarImage src="/placeholder/image 8.png" />
-          <AvatarFallback>DP</AvatarFallback>
+        <Avatar className={`size-24 border-4 ${statusBorder}`}>
+          <AvatarFallback className="bg-omni-blue/10 text-omni-blue text-2xl font-bold">
+            {initials}
+          </AvatarFallback>
         </Avatar>
         <div className="flex flex-col justify-center items-center ">
-          <h3 className="font-bold text-lg">Hugh Scott</h3>
-          <span className="text-omni-pitch-black/60 text-sm">@taghugh1</span>
-        </div>
-        <div className="space-x-4">
-          <Button className="bg-omni-blue font-semibold text-white">
-            Upload new pictures
-          </Button>
-          <Button className="bg-omni-red font-semibold text-white">
-            Delete
-          </Button>
+          <h3 className="font-bold text-lg capitalize">
+            {profile.firstName} {profile.lastName}
+          </h3>
+          <span className="text-omni-pitch-black/60 text-sm">
+            {profile.omniTag ? `@${profile.omniTag}` : profile.email}
+          </span>
         </div>
       </div>
-      <PersonalInfoForm />
+
+      <div className="grid gap-6 overflow-y-auto">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {renderFields(personalInfoFields)}
+        </div>
+
+        <Separator className="my-4" />
+
+        <h3 className="text-lg font-medium">Personal Address</h3>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {renderFields(addressFields)}
+        </div>
+      </div>
+
       <div className="mt-8 flex justify-end">
-        <Button className="bg-omni-blue text-white">Edit Details</Button>
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-omni-blue text-white transition-[background-color,scale] active:scale-[0.96] disabled:opacity-60"
+        >
+          {saving ? (
+            <>
+              <Loader2 className="size-4 mr-2 animate-spin" />
+              Saving…
+            </>
+          ) : (
+            "Save Details"
+          )}
+        </Button>
       </div>
     </>
   );

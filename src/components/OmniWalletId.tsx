@@ -11,7 +11,7 @@ import {
   SquareChevronDown,
 } from "lucide-react";
 import { Button } from "./ui/button";
-import { OmniTransactionsTable } from "@/components/test-transactions-table";
+import { OmniTransactionsTable } from "@/components/OmniTransactionsTable";
 import OmniLogo from "./OmniLogo";
 import OmniWalletCard from "./OmniWalletCard";
 import { getDefaultVirtualCard } from "@/lib/virtualCards";
