@@ -11,75 +11,61 @@
   <h1>Omni UI</h1> 
 </div>
 
-# Digital Banking Platform Demo
+**The Omni banking experience — a Next.js frontend for [Omni-Server](https://github.com/HughScott2002/Omni-Server).**
 
-A modern fintech interface built with Next.js 14 and TypeScript, showcasing advanced UI/UX patterns and real-time financial data handling. This project demonstrates my expertise in building scalable, user-centric financial applications.
+Dashboard, transactions, wallets, contacts, and account settings — every number on screen comes from the backend, with branded offline fallbacks when it can't be reached.
 
-## Key Technical Achievements
+## Quick start
 
-- Implemented real-time balance tracking and transaction management using WebSocket connections
-- Built responsive, accessible financial dashboards using shadcn/ui and Radix UI primitives
-- Achieved 95% test coverage with React Testing Library and Cypress
-- Optimized performance with Next.js 14 server components and streaming responses
-- Created smooth, performant animations using Framer Motion
-
-## Tech Stack Highlights
-
-- **Frontend**: Next.js 14, React, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components
-- **UI Architecture**: Radix UI primitives
-- **Animation**: Framer Motion
-
-## Features
-
-- Interactive financial dashboard with real-time updates
-- Secure transaction simulation system
-- Responsive design optimized for all devices
-- Dark/light mode with system preference detection // In development
-- Accessibility compliance with WCAG 2.1 standards // In development
-
-## Development
+Needs the [Omni-Server](https://github.com/HughScott2002/Omni-Server) stack running and seeded (`make build && make seed` over there).
 
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Run tests
-npm test
-
-# Build for production
-npm run build
+bun install
+bun run dev        # http://localhost:3000
 ```
 
-## Project Structure
+Log in with the seeded demo account — **demo@omni.dev / DemoPass123!** — or register your own and walk the verification flow.
+
+## What's inside
+
+| Area | State |
+| --- | --- |
+| **Dashboard** | Live balance, income/expenses, money flow, savings, budget, recent activity |
+| **Transactions** | Full history with working search, type/status filters, CSV export |
+| **Onboarding** | New accounts are gated until they verify: review your info, sign consent, unlock |
+| **Settings** | Editable profile, change password, active sessions, activity history, progress tracker |
+| **Notifications** | Real-time via WebSocket, unread badge, mark-read/delete |
+
+Every section renders one of three states: loading skeleton → live data → a branded *"Live data unavailable"* card with retry. No silent fakes.
+
+## Stack
+
+Next.js 14 (App Router) · TypeScript · Tailwind CSS · shadcn/ui + Radix · Recharts · Framer Motion · Bun
+
+## Scripts
+
+```bash
+bun run dev      # dev server
+bun run test     # unit tests (vitest)
+bun run build    # production build
+```
+
+## Configuration
+
+`NEXT_PUBLIC_API_BASE_URL` — the Omni gateway (defaults to `http://localhost`). Everything goes through one API client: `src/lib/api.ts`.
+
+## Structure
 
 ```
 src/
-├── app/       # Next.js pages
-├── components/   # Reusable UI components
-├── constants/   # Reusable UI components
-├── hooks/       # Custom React hooks
-├── lib/         # Utility functions
-└── types/      # Global styles and Tailwind config
+├── app/          # routes (App Router)
+├── components/   # UI components (Omni* + shadcn primitives in ui/)
+├── hooks/        # data hooks (useDashboardData, useProfile, …)
+├── lib/          # api client, derivations, settings wrappers
+└── types/        # shared types
+tests/            # vitest unit tests
 ```
 
 ## License
 
-This project is licensed under CC BY-NC-ND 4.0. See [LICENSE](LICENSE) for details.
-
----
-
-Created by [Hugh Scott](https://github.com/HughScott2002/) • [View Demo](https://github.com/HughScott2002/Omni-UI)
-
-### Additional Information
-
-- For more information about this license, please visit:
-  [https://creativecommons.org/licenses/by-nc-nd/4.0/](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-
----
-
-**Repository**: [https://github.com/HughScott2002/Omni-UI](https://github.com/HughScott2002/Omni-UI)
-**Creator**: Hugh Scott ([https://github.com/HughScott2002/](https://github.com/HughScott2002/))
+[CC BY-NC-ND 4.0](LICENSE) · Created by [Hugh Scott](https://github.com/HughScott2002/)
