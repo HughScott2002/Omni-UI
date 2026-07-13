@@ -6,9 +6,16 @@ import { Card } from "@/components/ui/card";
 import OmniInactiveDevelopment from "@/components/OmniInactiveDevelopment";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { CircleX } from "lucide-react";
+import { Check, Circle, CircleX } from "lucide-react";
 import OmniSettingsPersonalInformationSection from "@/components/OmniSettingsPersonalInformationSection";
 import OmniLoginAndSecuritySection from "@/components/OmniLoginAndSecuritySection";
+import OmniVerifyAccount from "@/components/OmniVerifyAccount";
+import { useAuth } from "@/components/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
+import {
+  computeOnboardingProgress,
+  OnboardingProgress,
+} from "@/lib/profile";
 
 // Types
 interface MenuItem {
@@ -17,12 +24,6 @@ interface MenuItem {
   title: string;
   description: string;
   active: boolean;
-}
-
-interface ProfileCompletion {
-  percentage: number;
-  title: string;
-  description: string;
 }
 
 const initialMenuItems: MenuItem[] = [
@@ -49,54 +50,87 @@ const initialMenuItems: MenuItem[] = [
   // },
 ];
 
-// Components
-const ProfileCompletionCard: React.FC<
-  ProfileCompletion & { onDismiss: () => void }
-> = ({ percentage, title, description, onDismiss }) => (
-  <Card className="bg-omni-blue p-6 text-white mx-4 max-w-96">
-    <div className="w-full h-fit flex justify-end">
-      <CircleX className="cursor-pointer" onClick={onDismiss} />
-    </div>
-    <div className="mb-4 flex items-center justify-between">
-      <div className="relative h-16 w-16">
-        <svg className="h-full w-full" viewBox="0 0 100 100">
-          <circle
-            className="stroke-muted"
-            cx="50"
-            cy="50"
-            r="40"
-            strokeWidth="10"
-            fill="none"
-          />
-          <circle
-            className="stroke-teal-400 transition-all duration-300 ease-in-out"
-            cx="50"
-            cy="50"
-            r="40"
-            strokeWidth="10"
-            fill="none"
-            strokeLinecap="round"
-            transform="rotate(-90 50 50)"
-            strokeDasharray={`${percentage * 2.51327} ${100 * 2.51327}`}
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-medium text-white">{percentage}%</span>
+// Onboarding tracker: progress is derived entirely from server state, so
+// once the account is complete this card is gone for good.
+const ProfileCompletionCard: React.FC<{
+  progress: OnboardingProgress;
+  onDismiss: () => void;
+  onVerified: () => void;
+}> = ({ progress, onDismiss, onVerified }) => {
+  const nextStep = progress.steps.find((step) => !step.done);
+  return (
+    <Card className="bg-omni-blue p-6 text-white mx-4 max-w-96">
+      <div className="w-full h-fit flex justify-end">
+        <CircleX className="cursor-pointer" onClick={onDismiss} />
+      </div>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="relative h-16 w-16">
+          <svg className="h-full w-full" viewBox="0 0 100 100">
+            <circle
+              className="stroke-muted"
+              cx="50"
+              cy="50"
+              r="40"
+              strokeWidth="10"
+              fill="none"
+            />
+            <circle
+              className="stroke-teal-400 transition-all duration-300 ease-in-out"
+              cx="50"
+              cy="50"
+              r="40"
+              strokeWidth="10"
+              fill="none"
+              strokeLinecap="round"
+              transform="rotate(-90 50 50)"
+              strokeDasharray={`${progress.percentage * 2.51327} ${
+                100 * 2.51327
+              }`}
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-lg font-medium text-white tabular-nums">
+              {progress.percentage}%
+            </span>
+          </div>
+        </div>
+        <div className="flex-1 px-4">
+          <h3 className="text-lg font-semibold text-balance">
+            {nextStep ? nextStep.label : "Complete profile"}
+          </h3>
+          <p className="text-sm opacity-90 text-pretty">
+            Finish setting up to unlock all features
+          </p>
         </div>
       </div>
-      <div className="flex-1 px-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm opacity-90">{description}</p>
-      </div>
-    </div>
-    <Button
-      variant="secondary"
-      className="w-full bg-white font-bold text-omni-blue"
-    >
-      Verify identity
-    </Button>
-  </Card>
-);
+      <ul className="mb-4 space-y-1.5">
+        {progress.steps.map((step) => (
+          <li key={step.key} className="flex items-center gap-2 text-sm">
+            {step.done ? (
+              <Check className="size-4 text-teal-300 shrink-0" />
+            ) : (
+              <Circle className="size-4 opacity-50 shrink-0" />
+            )}
+            <span className={step.done ? "opacity-70 line-through" : ""}>
+              {step.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <OmniVerifyAccount
+        onVerified={onVerified}
+        trigger={
+          <Button
+            variant="secondary"
+            className="w-full bg-white font-bold text-omni-blue transition-[background-color,scale] active:scale-[0.96]"
+          >
+            Verify identity
+          </Button>
+        }
+      />
+    </Card>
+  );
+};
 
 const MenuItem: React.FC<{
   item: MenuItem;
@@ -124,14 +158,16 @@ const MenuItem: React.FC<{
   </div>
 );
 
-// Components
-
 const Page = () => {
+  const { user } = useAuth();
+  const { profile, status, refetch } = useProfile(user?.id);
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [activeItemId, setActiveItemId] = useState("personal-info");
-  const [showCompletion, setShowCompletion] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
 
-  const handleDismiss = () => setShowCompletion(false);
+  const progress = computeOnboardingProgress(profile);
+  const showCompletion =
+    !dismissed && status === "ready" && profile !== null && !progress.complete;
 
   const handleMenuClick = (id: string) => {
     setMenuItems((items) =>
@@ -146,7 +182,14 @@ const Page = () => {
   const renderContent = () => {
     switch (activeItemId) {
       case "personal-info":
-        return <OmniSettingsPersonalInformationSection />;
+        return (
+          <OmniSettingsPersonalInformationSection
+            profile={profile}
+            status={status}
+            onSaved={refetch}
+            onRetry={refetch}
+          />
+        );
       case "security":
         return <OmniLoginAndSecuritySection />;
       case "debits":
@@ -156,22 +199,16 @@ const Page = () => {
     }
   };
 
-  const profileCompletion: ProfileCompletion = {
-    percentage: 50,
-    title: "Complete profile",
-    description: "Complete your profile to unlock all features",
-  };
-
   return (
     <div className="size-full">
       <div className="lg:flex size-full border-t-2">
         <div className="lg:w-[40%] xl:w-[30%] w-full lg:border-r-2 lg:py-8 pt-4">
-          {/* <ProfileCompletionCard {...profileCompletion} /> */}
           {showCompletion && (
             <div className="w-full flex justify-center items-center">
               <ProfileCompletionCard
-                {...profileCompletion}
-                onDismiss={handleDismiss}
+                progress={progress}
+                onDismiss={() => setDismissed(true)}
+                onVerified={refetch}
               />
             </div>
           )}
@@ -226,26 +263,6 @@ function LockIcon(props: React.ComponentProps<"svg">) {
     >
       <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
-function CreditCardIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="14" x="2" y="5" rx="2" />
-      <line x1="2" x2="22" y1="10" y2="10" />
     </svg>
   );
 }
