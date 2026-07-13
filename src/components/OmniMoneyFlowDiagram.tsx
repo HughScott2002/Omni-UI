@@ -1,5 +1,6 @@
 "use client";
 
+import { FC, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
@@ -12,20 +13,44 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Transaction } from "@/lib/transactions";
+import {
+  MoneyFlowRange,
+  formatMoney,
+  moneyFlowRangeLabel,
+  moneyFlowSeries,
+} from "@/lib/dashboard";
+import {
+  OmniEmpty,
+  OmniOffline,
+  OmniPanelSkeleton,
+} from "./OmniCardState";
+import { DashboardStatus } from "@/hooks/useDashboardData";
 
-const data = [
-  { time: "1D", value: 40 },
-  { time: "5D", value: 10 },
-  { time: "1M", value: 70 },
-  { time: "3M", value: 23 },
-  { time: "6M", value: 43 },
-  { time: "1Y", value: 100 },
-];
-const OmniMoneyFlowDiagram = () => {
+const RANGES: MoneyFlowRange[] = ["1D", "5D", "1M", "3M", "6M", "1Y"];
+
+interface OmniMoneyFlowDiagramProps {
+  transactions: Transaction[];
+  state?: DashboardStatus;
+  onRetry?: () => void;
+}
+
+const OmniMoneyFlowDiagram: FC<OmniMoneyFlowDiagramProps> = ({
+  transactions,
+  state = "ready",
+  onRetry,
+}) => {
+  const [range, setRange] = useState<MoneyFlowRange>("1M");
+
+  const data = useMemo(
+    () => moneyFlowSeries(transactions, range),
+    [transactions, range]
+  );
+  const hasActivity = data.some((point) => point.value > 0);
+
   return (
     <Card className="w-full rounded-3xl">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -39,75 +64,102 @@ const OmniMoneyFlowDiagram = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="rounded-lg text-xs h-8 bg-omni-background-grey font-semibold border-2 border-omni-background-grey"
+                className="rounded-lg text-xs h-8 bg-omni-background-grey font-semibold border-2 border-omni-background-grey tabular-nums"
               >
-                Jan 10 - Jan 16
+                {range} · {moneyFlowRangeLabel(range)}
                 <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-omni-background-grey">
-              <DropdownMenuLabel>Date Range</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {/* Add date range options here */}
+            <DropdownMenuContent className="bg-omni-background-grey" align="end">
+              {RANGES.map((r) => (
+                <DropdownMenuItem
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={
+                    r === range ? "font-bold text-omni-blue" : "font-medium"
+                  }
+                >
+                  {r === "1D"
+                    ? "Today"
+                    : r === "5D"
+                    ? "Last 5 days"
+                    : r === "1M"
+                    ? "Last month"
+                    : r === "3M"
+                    ? "Last 3 months"
+                    : r === "6M"
+                    ? "Last 6 months"
+                    : "Last year"}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer
-          config={{
-            expenses: {
-              label: "Expenses",
-              color: "hsl(var(--primary))",
-            },
-          }}
-          className="h-[300px] w-full transition-all"
-        >
-          <LineChart
-            data={data}
-            margin={{
-              top: 20,
-              right: 20,
-              bottom: 20,
-              left: 20,
+        {state === "loading" ? (
+          <div className="h-[300px]">
+            <OmniPanelSkeleton rows={4} />
+          </div>
+        ) : state === "error" ? (
+          <div className="h-[300px]">
+            <OmniOffline onRetry={onRetry} />
+          </div>
+        ) : !hasActivity ? (
+          <div className="h-[300px]">
+            <OmniEmpty
+              title="No spending in this period"
+              hint="Transactions you make will show up here"
+            />
+          </div>
+        ) : (
+          <ChartContainer
+            config={{
+              value: { label: "Expenses", color: "hsl(var(--primary))" },
             }}
+            className="h-[300px] w-full transition-all"
           >
-            <CartesianGrid vertical={false} stroke="#EDF2F7" />
-            <XAxis
-              dataKey="time"
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fontSize: "0.92431rem",
-                fontWeight: 600,
-                color: "#000000",
-              }}
-              dy={20}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: "0.92431rem", fontWeight: 600 }}
-              dx={-40}
-              domain={[0, 100]}
-              ticks={[0, 50, 100]}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent className="bg-omni-background-grey" />
-              }
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#000000"
-              fill="#000000"
-              strokeWidth={4}
-              dot={false}
-              activeDot={{ r: 4, strokeWidth: 0 }}
-            />
-          </LineChart>
-        </ChartContainer>
+            <LineChart
+              data={data}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            >
+              <CartesianGrid vertical={false} stroke="#EDF2F7" />
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: "0.92431rem", fontWeight: 600 }}
+                dy={20}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: "0.92431rem", fontWeight: 600 }}
+                width={80}
+                tickFormatter={(value) =>
+                  formatMoney(Number(value)).replace(/\.00$/, "")
+                }
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    className="bg-omni-background-grey tabular-nums"
+                    formatter={(value) => formatMoney(Number(value))}
+                  />
+                }
+              />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#000000"
+                fill="#000000"
+                strokeWidth={4}
+                dot={false}
+                activeDot={{ r: 4, strokeWidth: 0 }}
+              />
+            </LineChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );

@@ -8,7 +8,9 @@ import {
   ContactActionResponse,
 } from "@/types/contact";
 
-const BASE_URL = "http://localhost/api/users/auth";
+import { API_BASE_URL } from "@/lib/api";
+
+const BASE_URL = `${API_BASE_URL}/api/users/auth`;
 
 // Send a contact request by OmniTag
 export async function sendContactRequest(

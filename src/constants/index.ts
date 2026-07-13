@@ -3,7 +3,7 @@ export const appShortName = "Omni";
 export const appDescription = `${appName} is a fintech that provides a seamless experience for managing your finances.`;
 export const loginHeaderSubtext = "Login to your account to get started.";
 export const registerHeaderSubtext = "Create an account to get started.";
-export const API_BASE_URL = "http://localhost";
+export { API_BASE_URL } from "@/lib/api";
 //TODO: Add siderbar auth so that the user can only see some things in the siderbar
 
 export const sidebarLinks = [
