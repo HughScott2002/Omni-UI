@@ -1,3 +1,5 @@
+import { apiFetch } from "@/lib/api";
+
 export async function getListWallets(
   userId: string | undefined
 ): Promise<OmniWalletData[]> {
@@ -5,23 +7,10 @@ export async function getListWallets(
     if (!userId) {
       throw new Error("User ID is required");
     }
-
-    const response = await fetch(
-      `http://localhost/api/wallets/list/${userId}`,
-      {
-        credentials: "include",
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return await apiFetch<OmniWalletData[]>(`/api/wallets/list/${userId}`);
   } catch (error) {
     console.error("Error fetching wallets:", error);
-    return []; // Return empty array or handle error as needed
+    return [];
   }
 }
 
@@ -32,19 +21,9 @@ export async function getWallets(
     if (!userId) {
       throw new Error("User ID is required");
     }
-
-    const response = await fetch(`http://localhost/api/wallets/${userId}`, {
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return await apiFetch<OmniWalletData[]>(`/api/wallets/${userId}`);
   } catch (error) {
     console.error("Error fetching wallet:", error);
-    return []; // Return empty array or handle error as needed
+    return [];
   }
 }

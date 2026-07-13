@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 export default function OmniAccountAlerts() {
   const [isVisible, setIsVisible] = useState(true);
   const { user } = useAuth();
-  console.log(user);
   const status: string = user?.kycStatus || "";
   // const status: string = "approved";
 

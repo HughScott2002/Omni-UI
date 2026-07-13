@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import {
   ChevronDown,
   LogOut,
@@ -50,7 +50,13 @@ const profileItems: ProfileItemsArray = [
 ];
 
 const OmniProfile = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const fullName = user
+    ? `${user.firstName} ${user.lastName}`.trim()
+    : "Your account";
+  const initials = user
+    ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
+    : "•";
   function handleLogout() {
     logout();
   }
@@ -59,11 +65,12 @@ const OmniProfile = () => {
       <DropdownMenuTrigger>
         <div className="flex gap-3 p-2 bg-[#FAFAFA] rounded-full justify-center items-center hover:bg-omni-blue hover:text-white transition-colors ease-in">
           <Avatar className="size-8">
-            <AvatarImage src="/placeholder/image 8.png" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback className="bg-omni-blue/10 text-omni-blue text-xs font-bold">
+              {initials}
+            </AvatarFallback>
           </Avatar>
-          <span className="font-poppins text-sm font-semibold  truncate max-w-32">
-            Hugh Scott
+          <span className="font-poppins text-sm font-semibold  truncate max-w-32 capitalize">
+            {fullName}
           </span>
           <ChevronDown className="w-4 h-4 mr-1" />
         </div>
@@ -76,7 +83,7 @@ const OmniProfile = () => {
             <div className=" flex w-full h-full gap-2">
               <div className="flex flex-col flex-grow  pl-4 ">
                 <span className="text-base font-bold capitalize">
-                  Hugh Scott
+                  {fullName}
                 </span>
                 <span className="text-omni-text-grey text-xs font-semibold">
                   Personal Account

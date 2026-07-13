@@ -10,7 +10,9 @@ import {
   GetVirtualCardsResponse,
 } from "@/types/virtualCard";
 
-const API_BASE_URL = "http://localhost/api/wallets/cards";
+import { API_BASE_URL as GATEWAY_URL } from "@/lib/api";
+
+const API_BASE_URL = `${GATEWAY_URL}/api/wallets/cards`;
 
 /**
  * Create a new virtual card
