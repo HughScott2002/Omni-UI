@@ -1,14 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ChevronRight, Copy, CreditCard, Info } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { OmniTransactionsTable } from "@/components/test-transactions-table";
 import { useEffect, useState } from "react";
-import { getWallets } from "@/lib/fetch";
+import { getWallet } from "@/lib/fetch";
 import WalletIdSkeleton from "@/components/OmniWalletIdSeleton";
 import OmniWalletId from "@/components/OmniWalletId";
-//TODO: FIX THE SINGLE WALLET FETCHING
 
 export default function Page({ params }: { params: { id: string } }) {
   const formatCurrency = (amount: number, includeSign = true) => {
@@ -25,10 +20,9 @@ export default function Page({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function fetchWallet() {
-      const data: OmniWalletData[] = await getWallets(params.id);
+      const data = await getWallet(params.id);
       if (data) {
-        // Type assertion to handle the mismatch
-        setWallet(data as unknown as OmniWalletData);
+        setWallet(data);
       }
     }
     fetchWallet();
