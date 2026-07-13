@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/constants";
+import { apiFetch } from "@/lib/api";
 
 export interface TransferRequest {
   senderWalletId: string;
@@ -41,23 +41,14 @@ export interface TransferResponse {
 }
 
 export async function transferMoney(data: TransferRequest): Promise<TransferResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/transactions/transfer`, {
+  return apiFetch<TransferResponse>("/api/transactions/transfer", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+    body: {
       ...data,
-      idempotencyKey: data.idempotencyKey || `transfer-${Date.now()}-${Math.random()}`,
-    }),
+      idempotencyKey:
+        data.idempotencyKey || `transfer-${Date.now()}-${Math.random()}`,
+    },
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Transfer failed");
-  }
-
-  return response.json();
 }
 
 export async function getAccountTransactions(
@@ -77,21 +68,9 @@ export async function getAccountTransactions(
   if (params?.category) queryParams.append("category", params.category);
   if (params?.status) queryParams.append("status", params.status);
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/transactions/account/${accountId}?${queryParams}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
+  return apiFetch<Transaction[]>(
+    `/api/transactions/account/${accountId}?${queryParams}`
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch transactions");
-  }
-
-  return response.json();
 }
 
 export async function getWalletTransactions(
@@ -111,37 +90,11 @@ export async function getWalletTransactions(
   if (params?.category) queryParams.append("category", params.category);
   if (params?.status) queryParams.append("status", params.status);
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/transactions/wallet/${walletId}?${queryParams}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
+  return apiFetch<Transaction[]>(
+    `/api/transactions/wallet/${walletId}?${queryParams}`
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch transactions");
-  }
-
-  return response.json();
 }
 
 export async function getTransaction(transactionId: string): Promise<Transaction> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/transactions/${transactionId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch transaction");
-  }
-
-  return response.json();
+  return apiFetch<Transaction>(`/api/transactions/${transactionId}`);
 }

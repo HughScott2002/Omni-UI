@@ -14,6 +14,17 @@ export async function getListWallets(
   }
 }
 
+export async function getWallet(
+  walletId: string
+): Promise<OmniWalletData | null> {
+  try {
+    return await apiFetch<OmniWalletData>(`/api/wallets/${walletId}`);
+  } catch (error) {
+    console.error("Error fetching wallet:", error);
+    return null;
+  }
+}
+
 export async function getWallets(
   userId: string | undefined
 ): Promise<OmniWalletData[]> {

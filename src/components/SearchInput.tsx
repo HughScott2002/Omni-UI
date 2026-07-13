@@ -1,17 +1,39 @@
 import { Input } from "@/components/ui/input";
-import { Search, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 
-const SearchInput = ({ type = "desktop" }: { type: "mobile" | "desktop" }) => {
+interface SearchInputProps {
+  type: "mobile" | "desktop";
+  value?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+}
+
+const SearchInput = ({
+  type = "desktop",
+  value,
+  onChange,
+  placeholder = "Search",
+}: SearchInputProps) => {
+  const inputProps = {
+    type: "search" as const,
+    placeholder,
+    // Only controlled when a handler is provided — existing uncontrolled
+    // usages keep working.
+    ...(onChange
+      ? {
+          value: value ?? "",
+          onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange(e.target.value),
+        }
+      : {}),
+  };
+
   if (type === "mobile") {
     return (
       <div className="mt-20 mb-0 pb-0 ">
         <div className="relative">
           <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-fill text-black-1" />
-          <Input
-            type="search"
-            placeholder="Search"
-            className="pl-10 text-black-1 w-fill"
-          />
+          <Input {...inputProps} className="pl-10 text-black-1 w-fill" />
         </div>
       </div>
     );
@@ -21,8 +43,7 @@ const SearchInput = ({ type = "desktop" }: { type: "mobile" | "desktop" }) => {
         <div className="relative size-full">
           <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-fill text-black-1" />
           <Input
-            type="search"
-            placeholder="Search"
+            {...inputProps}
             className="pl-10 font-semibold text-sm text-black-1 w-full h-full"
           />
         </div>
