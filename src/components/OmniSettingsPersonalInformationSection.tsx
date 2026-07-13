@@ -134,6 +134,13 @@ const OmniSettingsPersonalInformationSection: React.FC<
     `${profile.firstName?.[0] ?? ""}${profile.lastName?.[0] ?? ""}`.toUpperCase() ||
     "•";
 
+  const statusBorder =
+    profile.kycStatus === "approved"
+      ? "border-omni-green"
+      : profile.kycStatus === "rejected"
+      ? "border-omni-red"
+      : "border-omni-yellow";
+
   const renderFields = (fields: FieldDef[]) =>
     fields.map((field) => (
       <div key={field.key} className="space-y-2">
@@ -154,7 +161,7 @@ const OmniSettingsPersonalInformationSection: React.FC<
       </div>
 
       <div className="mb-8 flex md:flex-col justify-center items-center gap-4 w-full ">
-        <Avatar className="size-24 border-4 border-omni-blue">
+        <Avatar className={`size-24 border-4 ${statusBorder}`}>
           <AvatarFallback className="bg-omni-blue/10 text-omni-blue text-2xl font-bold">
             {initials}
           </AvatarFallback>

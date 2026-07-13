@@ -57,6 +57,14 @@ const OmniProfile = () => {
   const initials = user
     ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
     : "•";
+  // Account standing at a glance: green verified, yellow needs verification,
+  // red rejected/blocked.
+  const statusRing =
+    user?.kycStatus === "approved"
+      ? "ring-omni-green"
+      : user?.kycStatus === "rejected"
+      ? "ring-omni-red"
+      : "ring-omni-yellow";
   function handleLogout() {
     logout();
   }
@@ -64,7 +72,7 @@ const OmniProfile = () => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <div className="flex gap-3 p-2 bg-[#FAFAFA] rounded-full justify-center items-center hover:bg-omni-blue hover:text-white transition-colors ease-in">
-          <Avatar className="size-8">
+          <Avatar className={cn("size-8 ring-2 ring-offset-1", statusRing)}>
             <AvatarFallback className="bg-omni-blue/10 text-omni-blue text-xs font-bold">
               {initials}
             </AvatarFallback>
