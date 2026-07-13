@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ShieldAlert, X } from "lucide-react";
 import { useAuth } from "./AuthContext";
@@ -9,11 +9,28 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import OmniVerifyAccount from "./OmniVerifyAccount";
 
+const activationAckKey = (accountId: string) =>
+  `omni-activation-ack-${accountId}`;
+
 export default function OmniAccountAlerts() {
   const [isVisible, setIsVisible] = useState(true);
   const { user } = useAuth();
   const status: string = user?.kycStatus || "";
 
+  // The congratulations alert appears exactly once, right after activation —
+  // remember per account that it has been shown.
+  const [activationAcked] = useState(() => {
+    if (typeof window === "undefined" || !user?.id) return false;
+    return localStorage.getItem(activationAckKey(user.id)) !== null;
+  });
+
+  useEffect(() => {
+    if (status === "approved" && user?.id) {
+      localStorage.setItem(activationAckKey(user.id), new Date().toISOString());
+    }
+  }, [status, user?.id]);
+
+  if (status === "approved" && activationAcked) return null;
   if (!isVisible && status !== "rejected") return null;
 
   const alertContent: any = {
