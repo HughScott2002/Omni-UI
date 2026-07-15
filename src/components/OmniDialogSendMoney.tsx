@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import { Contact } from "@/types/contact";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Label } from "./ui/label";
@@ -70,7 +71,7 @@ const OmniCardItem = ({
 };
 interface OmniDialogSendMoneyProps {
   wallets: OmniWalletData[];
-  contacts: any[];
+  contacts: Contact[];
   selectedWallet: string;
   selectedContact: string;
   amount: string;

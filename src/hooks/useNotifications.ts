@@ -222,7 +222,7 @@ export function useNotifications(accountId: string | null | undefined) {
             break;
 
           default:
-            console.warn('Unknown message type:', message.type);
+            console.warn('Unknown message type:', (message as { type: string }).type);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);

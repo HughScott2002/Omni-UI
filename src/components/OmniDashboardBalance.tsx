@@ -61,7 +61,15 @@ export function OmniDashboardBalance() {
             <Bar
               dataKey="value"
               radius={[4, 4, 0, 0]}
-              shape={({ x, y, width, height, highlighted }: any) => (
+              shape={(props: unknown) => {
+                const { x, y, width, height, highlighted } = props as {
+                  x: number;
+                  y: number;
+                  width: number;
+                  height: number;
+                  highlighted?: boolean;
+                };
+                return (
                 <rect
                   x={x}
                   y={y}
@@ -70,7 +78,8 @@ export function OmniDashboardBalance() {
                   fill={highlighted ? "#118AB2" : "#CBD5E0"}
                   rx={4}
                 />
-              )}
+                );
+              }}
             />
           </BarChart>
         </ResponsiveContainer>

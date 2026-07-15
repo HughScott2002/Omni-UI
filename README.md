@@ -13,7 +13,9 @@
 
 **The Omni banking experience — a Next.js frontend for [Omni-Server](https://github.com/HughScott2002/Omni-Server).**
 
-Dashboard, transactions, wallets, contacts, and account settings — every number on screen comes from the backend, with branded offline fallbacks when it can't be reached.
+Dashboard, transactions, wallets, contacts, and account settings for the local Omni digital-wallet demo. The Dashboard and Transactions release paths use live backend data; prototype routes and remaining sample-data fallbacks are tracked as blockers rather than presented as finished features.
+
+The shared `v1.0-demo` finish line is defined in [Omni-Server's portfolio scope](https://github.com/HughScott2002/Omni-Server/blob/main/PORTFOLIO_SCOPE.md).
 
 ## Quick start
 
@@ -34,9 +36,9 @@ Log in with the seeded demo account — **demo@omni.dev / DemoPass123!** — or 
 | **Transactions** | Full history with working search, type/status filters, CSV export |
 | **Onboarding** | New accounts are gated until they verify: review your info, sign consent, unlock |
 | **Settings** | Editable profile, change password, active sessions, activity history, progress tracker |
-| **Notifications** | Real-time via WebSocket, unread badge, mark-read/delete |
+| **Notifications** | Real-time via WebSocket for the event types consumed by the notification service; transaction coverage is not yet complete |
 
-Every section renders one of three states: loading skeleton → live data → a branded *"Live data unavailable"* card with retry. No silent fakes.
+The portfolio release requires every included section to render loading → live/empty → explicit error states without silent sample-data fallbacks. That standard is already used by the Dashboard and Transactions paths but is not yet true of every prototype route.
 
 ## Stack
 

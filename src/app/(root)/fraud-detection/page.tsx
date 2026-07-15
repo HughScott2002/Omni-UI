@@ -7,19 +7,15 @@ import OmniMoneySavedGraph from "@/components/OmniMoneySavedGraph";
 import OmniProtectionRateGraph from "@/components/OmniProtectionRateGraph";
 import OmniRateOfTransactionsDiagram from "@/components/OmniRateOfTransactionsDiagram";
 import OmniTopDashComponent from "@/components/OmniTopDashComponent";
-import SearchInput from "@/components/SearchInput";
 import { FraudTransactionsTable } from "@/components/OmniFraudTransactionsTable";
-import { Button } from "@/components/ui/button";
-import { Download, Settings2, ShieldCheck } from "lucide-react";
 import { useFraudDetection } from "@/hooks/useFraudDetection";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useState, useEffect } from "react";
-import { getFraudDetectionData, FraudDetectionData } from "@/lib/fraud-detection";
-import { Tooltip } from "@/components/ui/tooltip";
-import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { getFraudDetectionData } from "@/lib/fraud-detection";
+import { FraudDetectionResponse } from "@/types/fraud-detection";
 
 const Fraud_Detection = () => {
-  const { data: mockData, loading: mockLoading, error: mockError } = useFraudDetection(3000);
+  const { data: mockData } = useFraudDetection(3000);
   const {
     transactions,
     loading: transactionsLoading,
@@ -27,7 +23,7 @@ const Fraud_Detection = () => {
     newTransactionIds,
   } = useTransactions(2000);
 
-  const [data, setData] = useState<FraudDetectionData | null>(null);
+  const [data, setData] = useState<FraudDetectionResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,9 +31,24 @@ const Fraud_Detection = () => {
     async function fetchData() {
       try {
         const result = await getFraudDetectionData();
-        // Use API data if available, otherwise fallback to mock data
-        if (result.metrics.totalTransactions > 0 || mockData) {
-          setData(result.metrics.totalTransactions > 0 ? result : mockData);
+        // Use API data if available, otherwise fallback to mock data.
+        // The backend payload has no rate/history series, so those come
+        // from the polling hook until the API provides them.
+        if (result.metrics.totalTransactions > 0) {
+          setData({
+            metrics: {
+              ...result.metrics,
+              transactionRate: mockData?.metrics.transactionRate ?? {
+                current: 0,
+                trend: "stable",
+                change: 0,
+              },
+            },
+            transactionRateHistory: mockData?.transactionRateHistory ?? [],
+            lastUpdated: new Date().toISOString(),
+          });
+        } else if (mockData) {
+          setData(mockData);
         }
       } catch (err: any) {
         setError(err.message);
@@ -72,35 +83,35 @@ const Fraud_Detection = () => {
 
   const dashboardItems = data
     ? [
-        {
-          chartContainer: <OmniTotalTransactionsGraph />,
-          label: "Total Transactions",
-          value: data.metrics.totalTransactions,
-          animate: true,
-        },
-        {
-          chartContainer: <OmniFraudBlockedGraph />,
-          label: "Fraud Blocked",
-          value: data.metrics.fraudBlocked,
-          animate: true,
-        },
-        {
-          chartContainer: <OmniMoneySavedGraph />,
-          label: "Money Saved",
-          value: data.metrics.moneySaved,
-          animate: true,
-          prefix: "$",
-          decimals: 2,
-        },
-        {
-          chartContainer: <OmniProtectionRateGraph />,
-          label: "Protection Rate %",
-          value: data.metrics.protectionRate,
-          animate: true,
-          suffix: "%",
-          decimals: 1,
-        },
-      ]
+      {
+        chartContainer: <OmniTotalTransactionsGraph />,
+        label: "Total Transactions",
+        value: data.metrics.totalTransactions,
+        animate: true,
+      },
+      {
+        chartContainer: <OmniFraudBlockedGraph />,
+        label: "Fraud Blocked",
+        value: data.metrics.fraudBlocked,
+        animate: true,
+      },
+      {
+        chartContainer: <OmniMoneySavedGraph />,
+        label: "Money Saved",
+        value: data.metrics.moneySaved,
+        animate: true,
+        prefix: "$",
+        decimals: 2,
+      },
+      {
+        chartContainer: <OmniProtectionRateGraph />,
+        label: "Protection Rate %",
+        value: data.metrics.protectionRate,
+        animate: true,
+        suffix: "%",
+        decimals: 1,
+      },
+    ]
     : [];
 
   return (

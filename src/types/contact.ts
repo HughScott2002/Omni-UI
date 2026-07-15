@@ -1,24 +1,39 @@
-// Contact Types
+// Contact types — these mirror the users service wire format
+// (Omni-Server/1-users/src/models/contact.go). Keep them in sync.
 
+export type ContactStatus = "pending" | "accepted" | "rejected" | "blocked";
+
+// ContactInfo in Go: what GET /contacts/{accountid} returns per contact.
+// Note: the contact relationship ID is NOT exposed here; only the peer's
+// account details are. firstName/lastName/email appear after acceptance.
 export interface Contact {
-  contactId: string;
+  accountId: string;
   omniTag: string;
   firstName?: string;
   lastName?: string;
   email?: string;
-  avatar?: string;
+  status: ContactStatus;
   addedAt: string;
-  lastActivity?: string;
+  isAccepted: boolean;
 }
 
-export interface ContactRequest {
-  contactId: string;
+// UserBasic in Go: only omniTag is populated before acceptance.
+export interface ContactPeer {
+  accountId: string;
   omniTag: string;
   firstName?: string;
   lastName?: string;
-  avatar?: string;
+}
+
+// ContactRequest in Go: what the pending/sent endpoints return.
+// The peer's details are nested under fromUser (who sent it) and
+// toUser (who received it), not flattened onto the request.
+export interface ContactRequest {
+  contactId: string;
+  fromUser: ContactPeer;
+  toUser: ContactPeer;
+  status: "pending" | "accepted" | "rejected";
   requestedAt: string;
-  status: 'pending' | 'sent';
 }
 
 export interface ContactsResponse {

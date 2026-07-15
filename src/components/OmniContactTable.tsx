@@ -5,12 +5,12 @@ import {
   ArrowUpDown,
   ChevronDown,
   MoreVertical,
-  UserPlus,
   UserCheck,
   UserX,
   Ban,
   Trash2,
   Send,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,29 +20,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
 import {
   getContacts,
   getPendingRequests,
   getSentRequests,
   acceptContactRequest,
   rejectContactRequest,
-  blockContact,
-  deleteContact,
 } from "@/lib/contacts";
 import { Contact, ContactRequest } from "@/types/contact";
 import { TransferDialog } from "@/components/TransferDialog";
 
 // Define the table header data for contacts
-const contactTableHeaders: { label: string; icon: any }[] = [
+const contactTableHeaders: { label: string; icon: LucideIcon }[] = [
   { label: "Name/OmniTag", icon: ArrowUpDown },
   { label: "Added On", icon: ChevronDown },
-  { label: "Last Activity", icon: ChevronDown },
+  { label: "Status", icon: ChevronDown },
   { label: "Actions", icon: ChevronDown },
 ];
 
 // Define the table header data for requests
-const requestTableHeaders: { label: string; icon: any }[] = [
+const requestTableHeaders: { label: string; icon: LucideIcon }[] = [
   { label: "Name/OmniTag", icon: ArrowUpDown },
   { label: "Requested On", icon: ChevronDown },
   { label: "Actions", icon: ChevronDown },
@@ -50,7 +47,7 @@ const requestTableHeaders: { label: string; icon: any }[] = [
 
 type TableHeaderMakerProps = {
   label: string;
-  icon: any;
+  icon: LucideIcon;
 };
 
 const TableHeaderMaker = ({ label, icon: Icon }: TableHeaderMakerProps) => {
@@ -157,24 +154,6 @@ export function OmniContactTable({
     }
   };
 
-  const handleBlockContact = async (contactId: string) => {
-    try {
-      await blockContact(contactId);
-      await fetchData();
-    } catch (error) {
-      console.error("Error blocking contact:", error);
-    }
-  };
-
-  const handleDeleteContact = async (contactId: string) => {
-    try {
-      await deleteContact(contactId);
-      await fetchData();
-    } catch (error) {
-      console.error("Error deleting contact:", error);
-    }
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date
@@ -240,7 +219,7 @@ export function OmniContactTable({
               ) : (
                 contacts.map((contact) => (
                   <tr
-                    key={contact.contactId}
+                    key={contact.accountId}
                     className="hover:bg-omni-background-grey"
                   >
                     <TableCell>
@@ -277,10 +256,8 @@ export function OmniContactTable({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-omni-text-grey cursor-default">
-                        {contact.lastActivity
-                          ? formatDate(contact.lastActivity)
-                          : "No recent activity"}
+                      <span className="text-omni-text-grey cursor-default capitalize">
+                        {contact.status}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -303,23 +280,23 @@ export function OmniContactTable({
                               Send Money
                             </DropdownMenuItem>
                           )}
+                          {/* Block/Delete need the contact relationship ID,
+                              which GET /contacts/{accountid} does not return
+                              (ContactInfo has no contactId). Disabled until
+                              the users service exposes it. */}
                           <DropdownMenuItem
-                            onClick={() =>
-                              handleBlockContact(contact.contactId)
-                            }
+                            disabled
                             className="text-orange-600"
                           >
                             <Ban className="mr-2 h-4 w-4" />
-                            Block
+                            Block (unavailable)
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() =>
-                              handleDeleteContact(contact.contactId)
-                            }
+                            disabled
                             className="text-red-600"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            Delete (unavailable)
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -352,7 +329,10 @@ export function OmniContactTable({
                   </td>
                 </tr>
               ) : (
-                pendingRequests.map((request) => (
+                pendingRequests.map((request) => {
+                  // A pending request is one someone sent to us — show the sender.
+                  const peer = request.fromUser;
+                  return (
                   <tr
                     key={request.contactId}
                     className="hover:bg-omni-background-grey"
@@ -360,21 +340,21 @@ export function OmniContactTable({
                     <TableCell>
                       <div className="flex items-center cursor-default">
                         <div className="size-12 flex-shrink-0 rounded-full bg-omni-blue flex items-center justify-center text-white font-bold">
-                          {request.omniTag
-                            ? request.omniTag.charAt(0).toUpperCase()
+                          {peer.omniTag
+                            ? peer.omniTag.charAt(0).toUpperCase()
                             : "?"}
                         </div>
                         <div className="ml-4">
                           <div className="font-bold text-omni-pitch-black text-base">
-                            {request.firstName && request.lastName
-                              ? `${request.firstName} ${request.lastName}`
-                              : request.omniTag || "Unknown"}
+                            {peer.firstName && peer.lastName
+                              ? `${peer.firstName} ${peer.lastName}`
+                              : peer.omniTag || "Unknown"}
                           </div>
-                          {request.firstName &&
-                            request.lastName &&
-                            request.omniTag && (
+                          {peer.firstName &&
+                            peer.lastName &&
+                            peer.omniTag && (
                               <div className="text-omni-text-grey text-sm">
-                                {request.omniTag}
+                                {peer.omniTag}
                               </div>
                             )}
                         </div>
@@ -424,7 +404,8 @@ export function OmniContactTable({
                       </div>
                     </TableCell>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -451,7 +432,10 @@ export function OmniContactTable({
                   </td>
                 </tr>
               ) : (
-                sentRequests.map((request) => (
+                sentRequests.map((request) => {
+                  // A sent request is one we sent — show the recipient.
+                  const peer = request.toUser;
+                  return (
                   <tr
                     key={request.contactId}
                     className="hover:bg-omni-background-grey"
@@ -459,21 +443,21 @@ export function OmniContactTable({
                     <TableCell>
                       <div className="flex items-center cursor-default">
                         <div className="size-12 flex-shrink-0 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold">
-                          {request.omniTag
-                            ? request.omniTag.charAt(0).toUpperCase()
+                          {peer.omniTag
+                            ? peer.omniTag.charAt(0).toUpperCase()
                             : "?"}
                         </div>
                         <div className="ml-4">
                           <div className="font-bold text-omni-pitch-black text-base">
-                            {request.firstName && request.lastName
-                              ? `${request.firstName} ${request.lastName}`
-                              : request.omniTag || "Unknown"}
+                            {peer.firstName && peer.lastName
+                              ? `${peer.firstName} ${peer.lastName}`
+                              : peer.omniTag || "Unknown"}
                           </div>
-                          {request.firstName &&
-                            request.lastName &&
-                            request.omniTag && (
+                          {peer.firstName &&
+                            peer.lastName &&
+                            peer.omniTag && (
                               <div className="text-omni-text-grey text-sm">
-                                {request.omniTag}
+                                {peer.omniTag}
                               </div>
                             )}
                         </div>
@@ -495,7 +479,8 @@ export function OmniContactTable({
                       </span>
                     </TableCell>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>

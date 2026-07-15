@@ -16,6 +16,7 @@ import { ReactNode, useState, useEffect } from "react";
 import OmniDialogRecentContacts from "./OmniDialogRecentContacts";
 import OmniDialogSendMoney from "./OmniDialogSendMoney";
 import { getContacts } from "@/lib/contacts";
+import { Contact } from "@/types/contact";
 import { getListWallets } from "@/lib/fetch";
 import { transferMoney } from "@/lib/transactions";
 import { useToast } from "@/hooks/use-toast";
@@ -63,7 +64,7 @@ type OmniSendMoneyPros = {
 
 const OmniSendMoney = ({ trigger, accountId, onSuccess }: OmniSendMoneyPros) => {
   const [open, setOpen] = useState(false);
-  const [contacts, setContacts] = useState<any[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [wallets, setWallets] = useState<OmniWalletData[]>([]);
   const [selectedContact, setSelectedContact] = useState<string>("");
   const [selectedWallet, setSelectedWallet] = useState<string>("");

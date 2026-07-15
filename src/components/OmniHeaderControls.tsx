@@ -30,7 +30,7 @@ const OmniMoveButton = () => {
   );
 };
 
-type Controls = { node: any };
+type Controls = { node: React.ComponentType<{ className?: string }> };
 type ControlsArray = Controls[];
 const controls: ControlsArray = [
   {

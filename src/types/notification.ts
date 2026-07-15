@@ -30,12 +30,7 @@ export type WebSocketMessageType =
   | 'unread_count_update'
   | 'pong';
 
-export interface WebSocketMessage {
-  type: WebSocketMessageType;
-  data: any;
-}
-
-export interface ConnectedMessage extends WebSocketMessage {
+export interface ConnectedMessage {
   type: 'connected';
   data: {
     message: string;
@@ -44,21 +39,28 @@ export interface ConnectedMessage extends WebSocketMessage {
   };
 }
 
-export interface NotificationMessage extends WebSocketMessage {
+export interface NotificationMessage {
   type: 'notification';
   data: Notification;
 }
 
-export interface UnreadCountUpdateMessage extends WebSocketMessage {
+export interface UnreadCountUpdateMessage {
   type: 'unread_count_update';
   data: {
     unread_count: number;
   };
 }
 
-export interface PongMessage extends WebSocketMessage {
+export interface PongMessage {
   type: 'pong';
   data: {
     timestamp: string;
   };
 }
+
+// Discriminated union: switching on `type` narrows `data` automatically.
+export type WebSocketMessage =
+  | ConnectedMessage
+  | NotificationMessage
+  | UnreadCountUpdateMessage
+  | PongMessage;

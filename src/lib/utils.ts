@@ -117,7 +117,8 @@ export function formatAmount(amount: number): string {
   return formatter.format(amount);
 }
 
-export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
+export const parseStringify = <T>(value: T): T =>
+  JSON.parse(JSON.stringify(value));
 
 export const removeSpecialCharacters = (value: string) => {
   return value.replace(/[^\w\s]/gi, "");
@@ -244,14 +245,24 @@ export const LoginSchema = z.object({
 export const RegisterSchema = LoginSchema.extend({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
   address: z.string().min(5, "Address must be at least 5 characters"),
   city: z.string().min(2, "City must be at least 2 characters"),
-  state: z.string().length(2, "State must be 2 characters"),
-  postalCode: z.string().min(5, "Postal code must be at least 5 characters"),
-  dob: z.string().min(5, "Date of birth must be at least 5 characters"),
-  ssn: z.string().length(9, "SSN must be 9 characters"),
+  country: z.string().min(2, "Please select a country"),
+  currency: z.string().min(3, "Currency must be 3 characters"),
+  state: z.string().min(2, "State/Province must be at least 2 characters"),
+  postalCode: z
+    .string()
+    .min(2, "Postal/Zip code must be at least 2 characters"),
+  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
+  govId: z.string().min(4, "Government ID must be at least 4 characters"),
+  omniTag: z.string().length(5, "Omni Tag must be exactly 5 characters"),
+  dataAuthorization: z
+    .boolean()
+    .refine(
+      (val) => val === true,
+      "You must agree to the terms to gain access"
+    ),
 });
 export type AuthFormType = "login" | "register";
 

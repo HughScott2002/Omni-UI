@@ -140,6 +140,11 @@ export function FraudTransactionsTable({
         const aValue = a[sortConfig.key!];
         const bValue = b[sortConfig.key!];
 
+        // Optional columns (location, cardLast4) can be absent; sort those rows last.
+        if (aValue == null || bValue == null) {
+          if (aValue == null && bValue == null) return 0;
+          return aValue == null ? 1 : -1;
+        }
         if (aValue < bValue) {
           return sortConfig.direction === "asc" ? -1 : 1;
         }

@@ -12,29 +12,25 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Control, FieldPath } from "react-hook-form";
-import { z } from "zod";
-import { RegisterSchema } from "@/lib/utils";
+import { Control, FieldPath, FieldValues } from "react-hook-form";
 
-const formSchema = RegisterSchema;
-
-interface OmniSelectProps {
-  control: Control<z.infer<typeof formSchema>>;
-  name: FieldPath<z.infer<typeof formSchema>>;
+interface OmniSelectProps<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   placeholder: string;
   options: string[];
   onValueChange: (value: string) => void;
   icon: React.ReactNode;
 }
 
-const OmniSelect: React.FC<OmniSelectProps> = ({
+const OmniSelect = <TFieldValues extends FieldValues>({
   control,
   name,
   placeholder,
   options,
   onValueChange,
   icon,
-}) => {
+}: OmniSelectProps<TFieldValues>) => {
   return (
     <FormField
       control={control}

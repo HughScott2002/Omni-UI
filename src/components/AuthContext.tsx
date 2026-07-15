@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/api";
+import { RegisterFormData } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,10 +19,10 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  register: (userData: RegisterFormData) => Promise<void>;
   refreshToken: () => Promise<void>;
   refreshUser: () => Promise<void>;
-  dump: (data: any) => Promise<void>;
+  dump: (data: unknown) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -162,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const register = async (userData: any) => {
+  const register = async (userData: RegisterFormData) => {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/users/auth/account/register`,
@@ -194,7 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const dump = async (data: any) => {
+  const dump = async (data: unknown) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/dump`, {
         method: "POST",

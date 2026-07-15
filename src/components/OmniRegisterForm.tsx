@@ -26,7 +26,7 @@ import { useAuth } from "@/components/AuthContext";
 import OmniProgressBar from "./OmniProgressBar";
 import OmniSelect from "./OmniCustomSelect";
 import OmniCustomRegisterInput from "./Omni-custom-register-input";
-import { cn } from "@/lib/utils";
+import { cn, RegisterSchema, RegisterFormData } from "@/lib/utils";
 
 const countries = {
   G7: [
@@ -113,38 +113,12 @@ const allCountries: string[] = Object.values(countries)
   .sort();
 // export { countries, allCountries };
 
-const currencies = {
+// Countries the service currently supports, mapped to their wallet currency.
+const currencies: Record<string, string> = {
   "United States": "USD",
   "United Kingdom": "GBP",
   Jamaica: "JMD",
-  // Add more countries and their currencies here
 };
-
-const registerSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
-  address: z.string().min(5, "Address must be at least 5 characters"),
-  city: z.string().min(2, "City must be at least 2 characters"),
-  country: z.string().min(2, "Please select a country"),
-  currency: z.string().min(3, "Currency must be 3 characters"),
-  state: z.string().min(2, "State/Province must be at least 2 characters"),
-  postalCode: z
-    .string()
-    .min(2, "Postal/Zip code must be at least 2 characters"),
-  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
-  govId: z.string().min(4, "Government ID must be at least 4 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  omniTag: z.string().length(5, "Omni Tag must be exactly 5 characters"),
-  dataAuthorization: z
-    .boolean()
-    .refine(
-      (val) => val === true,
-      "You must agree to the terms to gain access"
-    ),
-});
-type RegisterSchema = z.infer<typeof registerSchema>;
 
 const OmniRegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -153,8 +127,8 @@ const OmniRegisterForm = () => {
   const { toast } = useToast();
   const { register } = useAuth();
 
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -174,7 +148,7 @@ const OmniRegisterForm = () => {
     },
   });
   
-  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+  const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
       await register(data);
@@ -191,7 +165,7 @@ const OmniRegisterForm = () => {
     }
   };
 
-  const formSteps: (keyof RegisterSchema)[][] = [
+  const formSteps: (keyof RegisterFormData)[][] = [
     ["firstName", "lastName", "email", "password"],
     ["address", "city", "country", "currency"],
     ["state", "postalCode", "dob", "govId", "omniTag", "dataAuthorization"],
@@ -206,12 +180,9 @@ const OmniRegisterForm = () => {
     const stepData = form.getValues();
     const stepSchema = z.object(
       Object.fromEntries(
-        currentStepFields.map((field) => [
-          field,
-          registerSchema.shape[field as keyof typeof registerSchema.shape],
-        ])
+        currentStepFields.map((field) => [field, RegisterSchema.shape[field]])
       )
-    ) as z.ZodType<Partial<RegisterSchema>>;
+    ) as z.ZodType<Partial<RegisterFormData>>;
 
     try {
       await stepSchema.parseAsync(stepData);
@@ -227,15 +198,15 @@ const OmniRegisterForm = () => {
 
   const handleNext = async () => {
     const isValid = await form.trigger(formSteps[step]);
-    if (isValid) {
-      if (isLastStep) {
-        const data: z.infer<typeof registerSchema> = form.getValues();
-        await form.handleSubmit(onSubmit(data));
-      } else {
-        setStep((prevStep: number) => prevStep + 1);
-      }
-    } else {
-      console.log("Form validation failed", form.formState.errors); // Add this
+    if (!isValid) {
+      console.log("Form validation failed", form.formState.errors);
+      return;
+    }
+    // On the last step the button is type="submit", so the form's
+    // handleSubmit(onSubmit) fires; calling onSubmit here too would
+    // register the account twice.
+    if (!isLastStep) {
+      setStep((prevStep: number) => prevStep + 1);
     }
   };
 

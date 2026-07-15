@@ -1,11 +1,10 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
-import { z } from "zod";
-import { Control, FieldPath } from "react-hook-form";
-import { RegisterSchema, cn } from "@/lib/utils";
+import { Control, FieldPath, FieldValues } from "react-hook-form";
+import { cn } from "@/lib/utils";
 import {
   FormControl,
   FormField,
@@ -15,20 +14,18 @@ import {
 
 //TODO: Fix the data Icon
 
-const formSchema = RegisterSchema;
-
-interface OmniCustomInputProps {
-  control: Control<z.infer<typeof formSchema>>;
-  name: FieldPath<z.infer<typeof formSchema>>;
+interface OmniCustomInputProps<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   placeholder: string;
   type: string;
   icon: React.ReactNode;
   rightIcon?: React.ReactNode;
   onRightIconClick?: () => void;
   className?: string;
-  isHidden: boolean;
+  isHidden?: boolean;
 }
-const OmniCustomRegisterInput: React.FC<OmniCustomInputProps> = ({
+const OmniCustomRegisterInput = <TFieldValues extends FieldValues>({
   control,
   name,
   placeholder,
@@ -38,7 +35,7 @@ const OmniCustomRegisterInput: React.FC<OmniCustomInputProps> = ({
   onRightIconClick,
   className = "",
   isHidden = false,
-}) => {
+}: OmniCustomInputProps<TFieldValues>) => {
   const [showPassword, setShowPassword] = useState(false);
   const [inputType, setInputType] = useState(initialType);
 

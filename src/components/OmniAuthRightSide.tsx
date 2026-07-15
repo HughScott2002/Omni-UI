@@ -1,6 +1,5 @@
 import Image from "next/image";
 import React from "react";
-import OmniLicence from "./OmniLicence";
 
 const OmniAuthRightSide = () => {
   return (
@@ -22,7 +21,7 @@ const OmniAuthRightSide = () => {
             </h2>
             <p className="text-white font-medium text-sm text-opacity-75 font-manrope w-full text-pretty ">
               Omni helps you send money person to person instally across the
-              carribbean. It's always alive, always ready to serve, always safe.
+              carribbean. It{"'"}s always alive, always ready to serve, always safe.
             </p>
           </div>
         </div>

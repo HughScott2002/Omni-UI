@@ -33,7 +33,15 @@ export default function OmniAccountAlerts() {
   if (status === "approved" && activationAcked) return null;
   if (!isVisible && status !== "rejected") return null;
 
-  const alertContent: any = {
+  const alertContent: Record<
+    string,
+    {
+      title: string;
+      description: string;
+      className: string;
+      icon: React.ReactNode;
+    }
+  > = {
     pending: {
       title: "Verify your account",
       description:
